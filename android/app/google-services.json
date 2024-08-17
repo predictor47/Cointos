@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "513615609284",
+    "project_id": "coinverse-f947a",
+    "storage_bucket": "coinverse-f947a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:513615609284:android:4cf45a2f86af7ff684b891",
+        "android_client_info": {
+          "package_name": "com.cointos.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "513615609284-b819mk9i32teloeum67qj4f49l9f7ke7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUH_hAL469gIuvrgKSy8gR-vYDekIH3Yc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "513615609284-b819mk9i32teloeum67qj4f49l9f7ke7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
