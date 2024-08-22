@@ -33,6 +33,10 @@ dependencies:
   firebase_core: ^3.3.0 
   firebase_auth: ^5.1.4 
   provider: ^6.1.2
+  google_sign_in: ^6.1.1
+  http: ^1.2.2
+  fl_chart: ^0.68.0
+  cloud_firestore: ^5.2.1
 
 
 
