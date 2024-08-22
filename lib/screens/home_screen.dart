@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: Icon(Icons.exit_to_app, color: Colors.white),
               title: Text('Sign Out', style: TextStyle(color: Colors.white)),
               onTap: () async {
-                await authProvider.signOut();
+                await authProvider.logout();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => LoginScreen()),

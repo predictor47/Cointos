@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -64,7 +65,6 @@ class _LoginScreenState extends State<LoginScreen>
     return Scaffold(
       backgroundColor: Color(0xFF0D1117),
       body: SingleChildScrollView(
-        // Added for scroll prevention
         child: Center(
           child: AnimatedBuilder(
             animation: _animationController,
@@ -102,10 +102,10 @@ class _LoginScreenState extends State<LoginScreen>
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide.none,
                               ),
-                              errorText: _emailError, // Display email error
+                              errorText: _emailError,
                               errorStyle: TextStyle(
                                 color: Colors.red,
-                                fontSize: 12, // Smaller error text
+                                fontSize: 12,
                               ),
                             ),
                             validator: (value) {
@@ -118,6 +118,19 @@ class _LoginScreenState extends State<LoginScreen>
                               return null;
                             },
                           ),
+                          // Error message for email field
+                          if (_emailError != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                _emailError!,
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+
                           SizedBox(height: 16.0),
                           TextFormField(
                             controller: _passwordController,
@@ -131,12 +144,11 @@ class _LoginScreenState extends State<LoginScreen>
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide.none,
                               ),
-                              errorText:
-                                  _passwordError, // Display password error
-                              errorStyle: TextStyle(
-                                color: Colors.red,
-                                fontSize: 12, // Smaller error text
-                              ),
+                              errorText: _passwordError,
+                              errorStyle:TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
                             ),
                             obscureText: true,
                             validator: (value) {
@@ -146,10 +158,23 @@ class _LoginScreenState extends State<LoginScreen>
                               return null;
                             },
                           ),
+
+                          // Error message for password field
+                          if (_passwordError != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                _passwordError!,
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+
                           SizedBox(height: 32.0),
                           ElevatedButton(
                             onPressed: () async {
-                              // Reset error messages
                               setState(() {
                                 _emailError = null;
                                 _passwordError = null;
@@ -178,29 +203,27 @@ class _LoginScreenState extends State<LoginScreen>
                                           SizedBox(width: 16),
                                           Text(
                                             'Logging in...',
-                                            style:
-                                                TextStyle(color: Colors.white),
+                                            style: TextStyle(color: Colors.white),
                                           ),
                                         ],
                                       ),
                                     ),
                                   );
                                 } else {
-                                  Navigator.pop(
-                                      context); // Close loading dialog
+                                  Navigator.pop(context); // Close loading dialog if open
 
                                   if (authProvider.errorMessage != null) {
-                                    // Handle specific Firebase errors
+                                    // Handle specific Firebase errors with better messages
                                     if (authProvider.errorMessage!
                                         .contains('user-not-found')) {
                                       setState(() {
                                         _emailError =
-                                            'User not found. Sign up?';
+                                            'No account found for this email. Sign up?';
                                       });
                                     } else if (authProvider.errorMessage!
                                         .contains('wrong-password')) {
                                       setState(() {
-                                        _passwordError = 'Incorrect password';
+                                        _passwordError = 'Incorrect password.';
                                       });
                                     } else {
                                       // Generic error handling
@@ -217,6 +240,7 @@ class _LoginScreenState extends State<LoginScreen>
                                       );
                                     }
                                   } else {
+                                    // Successful login, navigate to HomeScreen
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
@@ -259,10 +283,23 @@ class _LoginScreenState extends State<LoginScreen>
                           SizedBox(height: 32.0),
                           Wrap(
                             alignment: WrapAlignment.center,
+                            spacing: 16.0,
+                            runSpacing: 16.0,
                             children: [
                               ElevatedButton.icon(
-                                onPressed: () {
-                                  // Implement Google sign-in logic here
+                                onPressed: () async {
+                                  UserCredential? userCredential =
+                                      await authProvider.signInWithGoogle();
+                                  if (userCredential != null) {
+                                    // Navigate to HomeScreen or handle success
+                                    print(
+                                        "Google sign-in successful: ${userCredential.user?.email}");
+                                    // TODO: Implement navigation or success handling
+                                  } else {
+                                    // Handle Google sign-in failure (e.g., show an error message)
+                                    print("Google sign-in failed");
+                                    // TODO: Implement error handling
+                                  }
                                 },
                                 icon: Icon(Icons.g_mobiledata),
                                 label: Text('Google'),
@@ -270,46 +307,31 @@ class _LoginScreenState extends State<LoginScreen>
                                   foregroundColor: Color(0xFF0D9488),
                                   backgroundColor: Color(0xFF161B22),
                                   padding: EdgeInsets.symmetric(
-                                      vertical: 16.0, horizontal: 24.0),
+                                      vertical: 12.0, horizontal: 16.0),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 16.0),
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  // Implement Facebook sign-in logic here
-                                },
-                                icon: Icon(Icons.facebook),
-                                label: Text('Facebook'),
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Color(0xFF0D9488),
-                                  backgroundColor: Color(0xFF161B22),
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 16.0, horizontal: 24.0),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 24.0),
-
-                              // Sign Up button
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => SignupScreen()),
-                                  );
-                                },
-                                style: TextButton.styleFrom(
-                                  foregroundColor: Color(0xFF0D9488),
-                                ),
-                                child: Text("Don't have an account? Sign Up"),
-                              ),
+                              // TODO: Add Facebook sign-in button here if needed
                             ],
+                          ),
+
+                          SizedBox(height: 24.0),
+
+                          // Sign Up button
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SignupScreen()),
+                              );
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Color(0xFF0D9488),
+                            ),
+                            child: Text("Don't have an account? Sign Up"),
                           ),
                         ],
                       ),
