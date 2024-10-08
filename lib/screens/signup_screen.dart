@@ -4,6 +4,8 @@ import '../providers/auth_provider.dart';
 import 'login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
+
   @override
   _SignupScreenState createState() => _SignupScreenState();
 }
@@ -25,10 +27,10 @@ class _SignupScreenState extends State<SignupScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: Color(0xFF0D1117), // Dark background
+      backgroundColor: const Color(0xFF0D1117), // Dark background
       appBar: AppBar(
-        backgroundColor: Color(0xFF161B22), // Dark app bar background
-        title: Text(
+        backgroundColor: const Color(0xFF161B22), // Dark app bar background
+        title: const Text(
           'Cointos Signup',
           style: TextStyle(color: Colors.white), // White text
         ),
@@ -45,12 +47,12 @@ class _SignupScreenState extends State<SignupScreen> {
               children: [
                 TextFormField(
                   controller: _emailController,
-                  style: TextStyle(color: Colors.white), // White text
+                  style: const TextStyle(color: Colors.white), // White text
                   decoration: InputDecoration(
                     hintText: 'Email',
-                    hintStyle: TextStyle(color: Color(0xFF8B949E)),
+                    hintStyle: const TextStyle(color: Color(0xFF8B949E)),
                     filled: true,
-                    fillColor: Color(0xFF161B22), // Dark input background
+                    fillColor: const Color(0xFF161B22), // Dark input background
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
                       borderSide: BorderSide.none,
@@ -66,15 +68,15 @@ class _SignupScreenState extends State<SignupScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText: 'Password',
-                    hintStyle: TextStyle(color: Color(0xFF8B949E)),
+                    hintStyle: const TextStyle(color: Color(0xFF8B949E)),
                     filled: true,
-                    fillColor: Color(0xFF161B22),
+                    fillColor: const Color(0xFF161B22),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
                       borderSide: BorderSide.none,
@@ -91,7 +93,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 48),
+                const SizedBox(height: 48),
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
@@ -104,7 +106,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         showDialog(
                           context: context,
                           barrierDismissible: false,
-                          builder: (context) => AlertDialog(
+                          builder: (context) => const AlertDialog(
                             backgroundColor:
                                 Color(0xFF161B22), // Dark dialog background
                             content: Row(
@@ -130,10 +132,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               backgroundColor:
-                                  Color(0xFF161B22), // Dark snackbar background
+                                  const Color(0xFF161B22), // Dark snackbar background
                               content: Text(
                                 authProvider.errorMessage!,
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                               ),
                             ),
                           );
@@ -142,12 +144,12 @@ class _SignupScreenState extends State<SignupScreen> {
                             context: context,
                             builder: (context) => AlertDialog(
                               backgroundColor:
-                                  Color(0xFF161B22), // Dark dialog background
-                              title: Text(
+                                  const Color(0xFF161B22), // Dark dialog background
+                              title: const Text(
                                 'Signup Successful',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              content: Text(
+                              content: const Text(
                                 'You have successfully signed up. Please log in.',
                                 style: TextStyle(color: Colors.white),
                               ),
@@ -158,10 +160,10 @@ class _SignupScreenState extends State<SignupScreen> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => LoginScreen()),
+                                          builder: (context) => const LoginScreen()),
                                     );
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     'OK',
                                     style: TextStyle(color: Colors.white),
                                   ),
@@ -174,28 +176,28 @@ class _SignupScreenState extends State<SignupScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Color(0xFF0D9488),
+                    foregroundColor: const Color(0xFF0D9488),
                     backgroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                    textStyle: TextStyle(fontSize: 18),
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    textStyle: const TextStyle(fontSize: 18),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child: Text('Sign Up'),
+                  child: const Text('Sign Up'),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
                     );
                   },
                   style: TextButton.styleFrom(
-                    foregroundColor: Color(0xFF0D9488),
+                    foregroundColor: const Color(0xFF0D9488),
                   ),
-                  child: Text('Already have an account? Login'),
+                  child: const Text('Already have an account? Login'),
                 ),
               ],
             ),

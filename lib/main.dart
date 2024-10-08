@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'firebase_options.dart'; 
+import 'firebase_options.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/loading_screen.dart';
-import 'screens/home_screen.dart'; 
+import 'screens/home_screen.dart';
 import 'providers/auth_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp( 
-
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp()); 
-
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => AuthProvider(), 
-
+      create: (context) => AuthProvider(),
       child: MaterialApp(
-        title: 
- 'Cointos',
+        title: 'Cointos',
         theme: ThemeData(
           brightness: Brightness.light,
           primaryColor: Colors.blue,
@@ -38,15 +36,15 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.blue,
           // ... other dark theme customizations
         ),
-        themeMode: ThemeMode.system, 
-        home: Consumer<AuthProvider>( 
+        themeMode: ThemeMode.system,
+        home: Consumer<AuthProvider>(
           builder: (context, authProvider, child) {
             if (authProvider.isLoading) {
-              return LoadingScreen(); 
+              return const LoadingScreen();
             } else if (authProvider.user != null) {
-              return HomeScreen(); 
+              return const HomeScreen();
             } else {
-              return LoginScreen(); 
+              return const LoginScreen();
             }
           },
         ),

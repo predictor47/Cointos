@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -7,6 +8,8 @@ import 'forgot_password_screen.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -30,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 800),
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -63,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen>
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: Color(0xFF0D1117),
+      backgroundColor: const Color(0xFF0D1117),
       body: SingleChildScrollView(
         child: Center(
           child: AnimatedBuilder(
@@ -81,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen>
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(
+                          const Text(
                             'Welcome Back 👋',
                             style: TextStyle(
                               color: Colors.white,
@@ -89,21 +92,22 @@ class _LoginScreenState extends State<LoginScreen>
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 32.0),
+                          const SizedBox(height: 32.0),
                           TextFormField(
                             controller: _emailController,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               hintText: 'Email',
-                              hintStyle: TextStyle(color: Color(0xFF8B949E)),
+                              hintStyle:
+                                  const TextStyle(color: Color(0xFF8B949E)),
                               filled: true,
-                              fillColor: Color(0xFF161B22),
+                              fillColor: const Color(0xFF161B22),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide.none,
                               ),
                               errorText: _emailError,
-                              errorStyle: TextStyle(
+                              errorStyle: const TextStyle(
                                 color: Colors.red,
                                 fontSize: 12,
                               ),
@@ -124,31 +128,32 @@ class _LoginScreenState extends State<LoginScreen>
                               padding: const EdgeInsets.only(top: 8.0),
                               child: Text(
                                 _emailError!,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.red,
                                   fontSize: 12,
                                 ),
                               ),
                             ),
 
-                          SizedBox(height: 16.0),
+                          const SizedBox(height: 16.0),
                           TextFormField(
                             controller: _passwordController,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               hintText: 'Password',
-                              hintStyle: TextStyle(color: Color(0xFF8B949E)),
+                              hintStyle:
+                                  const TextStyle(color: Color(0xFF8B949E)),
                               filled: true,
-                              fillColor: Color(0xFF161B22),
+                              fillColor: const Color(0xFF161B22),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide.none,
                               ),
                               errorText: _passwordError,
-                              errorStyle:TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12,
-                                ),
+                              errorStyle: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
                             ),
                             obscureText: true,
                             validator: (value) {
@@ -165,14 +170,14 @@ class _LoginScreenState extends State<LoginScreen>
                               padding: const EdgeInsets.only(top: 8.0),
                               child: Text(
                                 _passwordError!,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.red,
                                   fontSize: 12,
                                 ),
                               ),
                             ),
 
-                          SizedBox(height: 32.0),
+                          const SizedBox(height: 32.0),
                           ElevatedButton(
                             onPressed: () async {
                               setState(() {
@@ -190,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   showDialog(
                                     context: context,
                                     barrierDismissible: false,
-                                    builder: (context) => AlertDialog(
+                                    builder: (context) => const AlertDialog(
                                       backgroundColor: Color(0xFF161B22),
                                       content: Row(
                                         children: [
@@ -203,14 +208,16 @@ class _LoginScreenState extends State<LoginScreen>
                                           SizedBox(width: 16),
                                           Text(
                                             'Logging in...',
-                                            style: TextStyle(color: Colors.white),
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
                                         ],
                                       ),
                                     ),
                                   );
                                 } else {
-                                  Navigator.pop(context); // Close loading dialog if open
+                                  Navigator.pop(
+                                      context); // Close loading dialog if open
 
                                   if (authProvider.errorMessage != null) {
                                     // Handle specific Firebase errors with better messages
@@ -230,11 +237,12 @@ class _LoginScreenState extends State<LoginScreen>
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
-                                          backgroundColor: Color(0xFF161B22),
+                                          backgroundColor:
+                                              const Color(0xFF161B22),
                                           content: Text(
                                             authProvider.errorMessage!,
-                                            style:
-                                                TextStyle(color: Colors.white),
+                                            style: const TextStyle(
+                                                color: Colors.white),
                                           ),
                                         ),
                                       );
@@ -244,23 +252,25 @@ class _LoginScreenState extends State<LoginScreen>
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => HomeScreen()),
+                                          builder: (context) =>
+                                              const HomeScreen()),
                                     );
                                   }
                                 }
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              foregroundColor: Color(0xFF0D9488),
+                              foregroundColor: const Color(0xFF0D9488),
                               backgroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(vertical: 16.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
-                            child: Text('Sign in'),
+                            child: const Text('Sign in'),
                           ),
-                          SizedBox(height: 16.0),
+                          const SizedBox(height: 16.0),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -270,17 +280,17 @@ class _LoginScreenState extends State<LoginScreen>
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            ForgotPasswordScreen()),
+                                            const ForgotPasswordScreen()),
                                   );
                                 },
                                 style: TextButton.styleFrom(
-                                  foregroundColor: Color(0xFF0D9488),
+                                  foregroundColor: const Color(0xFF0D9488),
                                 ),
-                                child: Text('Forgot Password?'),
+                                child: const Text('Forgot Password?'),
                               ),
                             ],
                           ),
-                          SizedBox(height: 32.0),
+                          const SizedBox(height: 32.0),
                           Wrap(
                             alignment: WrapAlignment.center,
                             spacing: 16.0,
@@ -292,21 +302,25 @@ class _LoginScreenState extends State<LoginScreen>
                                       await authProvider.signInWithGoogle();
                                   if (userCredential != null) {
                                     // Navigate to HomeScreen or handle success
-                                    print(
-                                        "Google sign-in successful: ${userCredential.user?.email}");
+                                    if (kDebugMode) {
+                                      print(
+                                          "Google sign-in successful: ${userCredential.user?.email}");
+                                    }
                                     // TODO: Implement navigation or success handling
                                   } else {
                                     // Handle Google sign-in failure (e.g., show an error message)
-                                    print("Google sign-in failed");
+                                    if (kDebugMode) {
+                                      print("Google sign-in failed");
+                                    }
                                     // TODO: Implement error handling
                                   }
                                 },
-                                icon: Icon(Icons.g_mobiledata),
-                                label: Text('Google'),
+                                icon: const Icon(Icons.g_mobiledata),
+                                label: const Text('Google'),
                                 style: ElevatedButton.styleFrom(
-                                  foregroundColor: Color(0xFF0D9488),
-                                  backgroundColor: Color(0xFF161B22),
-                                  padding: EdgeInsets.symmetric(
+                                  foregroundColor: const Color(0xFF0D9488),
+                                  backgroundColor: const Color(0xFF161B22),
+                                  padding: const EdgeInsets.symmetric(
                                       vertical: 12.0, horizontal: 16.0),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.0),
@@ -317,7 +331,7 @@ class _LoginScreenState extends State<LoginScreen>
                             ],
                           ),
 
-                          SizedBox(height: 24.0),
+                          const SizedBox(height: 24.0),
 
                           // Sign Up button
                           TextButton(
@@ -325,13 +339,13 @@ class _LoginScreenState extends State<LoginScreen>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => SignupScreen()),
+                                    builder: (context) => const SignupScreen()),
                               );
                             },
                             style: TextButton.styleFrom(
-                              foregroundColor: Color(0xFF0D9488),
+                              foregroundColor: const Color(0xFF0D9488),
                             ),
-                            child: Text("Don't have an account? Sign Up"),
+                            child: const Text("Don't have an account? Sign Up"),
                           ),
                         ],
                       ),

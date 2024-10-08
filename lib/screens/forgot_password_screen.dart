@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
+
   @override
   _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
@@ -22,10 +24,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: Color(0xFF0D1117), // Dark background
+      backgroundColor: const Color(0xFF0D1117), // Dark background
       appBar: AppBar(
-        backgroundColor: Color(0xFF161B22), // Dark app bar background
-        title: Text(
+        backgroundColor: const Color(0xFF161B22), // Dark app bar background
+        title: const Text(
           'Forgot Password',
           style: TextStyle(color: Colors.white), // White text
         ),
@@ -40,12 +42,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               children: [
                 TextFormField(
                   controller: _emailController,
-                  style: TextStyle(color: Colors.white), // White text
+                  style: const TextStyle(color: Colors.white), // White text
                   decoration: InputDecoration(
                     hintText: 'Email',
-                    hintStyle: TextStyle(color: Color(0xFF8B949E)),
+                    hintStyle: const TextStyle(color: Color(0xFF8B949E)),
                     filled: true,
-                    fillColor: Color(0xFF161B22), // Dark input background
+                    fillColor: const Color(0xFF161B22), // Dark input background
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
                       borderSide: BorderSide.none,
@@ -61,7 +63,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 48),
+                const SizedBox(height: 48),
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
@@ -71,7 +73,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         showDialog(
                           context: context,
                           barrierDismissible: false,
-                          builder: (context) => AlertDialog(
+                          builder: (context) => const AlertDialog(
                             backgroundColor:
                                 Color(0xFF161B22), // Dark dialog background
                             content: Row(
@@ -97,10 +99,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               backgroundColor:
-                                  Color(0xFF161B22), // Dark snackbar background
+                                  const Color(0xFF161B22), // Dark snackbar background
                               content: Text(
                                 authProvider.errorMessage!,
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                               ),
                             ),
                           );
@@ -109,19 +111,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             context: context,
                             builder: (context) => AlertDialog(
                               backgroundColor:
-                                  Color(0xFF161B22), // Dark dialog background
-                              title: Text(
+                                  const Color(0xFF161B22), // Dark dialog background
+                              title: const Text(
                                 'Password Reset Email Sent',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              content: Text(
+                              content: const Text(
                                 'Please check your inbox for instructions to reset your password.',
                                 style: TextStyle(color: Colors.white),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: Text(
+                                  child: const Text(
                                     'OK',
                                     style: TextStyle(color: Colors.white),
                                   ),
@@ -134,15 +136,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Color(0xFF0D9488), // Accent color
+                    foregroundColor: const Color(0xFF0D9488), // Accent color
                     backgroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                    textStyle: TextStyle(fontSize: 18),
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    textStyle: const TextStyle(fontSize: 18),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child: Text('Reset Password'),
+                  child: const Text('Reset Password'),
                 ),
               ],
             ),

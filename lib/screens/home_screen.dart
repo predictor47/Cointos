@@ -1,237 +1,310 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
-import '../services/coin_service.dart';
-import '../models/coin_model.dart';
-import 'profile_screen.dart';
-import 'login_screen.dart';
-import 'package:fl_chart/fl_chart.dart';
+import '../services/crypto_service.dart';
+import 'crypto_detail_screen.dart';
+import '../models/crypto_model.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final CoinService _coinService = CoinService();
-  List<Coin> _topCoins = [];
-  List<Coin> _allCoins = [];
-  bool _isLoading = true;
+  int _currentIndex = 0;
+  final List<Crypto> _favorites = [];
+  final List<Crypto> _watchlist = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          CryptoListScreen(
+            onAddFavorite: _addToFavorites,
+            onAddWatchlist: _addToWatchlist,
+          ),
+          FavoritesScreen(favorites: _favorites),
+          WatchlistScreen(watchlist: _watchlist),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        backgroundColor: Colors.grey[900],
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Cryptos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Favorites',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.watch_later),
+            label: 'Watchlist',
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _addToFavorites(Crypto crypto) {
+    setState(() {
+      if (!_favorites.contains(crypto)) {
+        _favorites.add(crypto);
+      }
+    });
+  }
+
+  void _addToWatchlist(Crypto crypto) {
+    setState(() {
+      if (!_watchlist.contains(crypto)) {
+        _watchlist.add(crypto);
+      }
+    });
+  }
+}
+
+class CryptoListScreen extends StatefulWidget {
+  final Function(Crypto) onAddFavorite;
+  final Function(Crypto) onAddWatchlist;
+
+  const CryptoListScreen({
+    super.key,
+    required this.onAddFavorite,
+    required this.onAddWatchlist,
+  });
+
+  @override
+  _CryptoListScreenState createState() => _CryptoListScreenState();
+}
+
+class _CryptoListScreenState extends State<CryptoListScreen> {
+  late Future<List<Crypto>> _cryptoList;
+  List<Crypto> _filteredCryptos = [];
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _fetchCoinData();
+    _fetchCryptos();
   }
 
-  Future<void> _fetchCoinData() async {
-    try {
-      final topCoins = await _coinService.getTopCoins(limit: 5);
-      final allCoins = await _coinService.getAllCoins();
-      setState(() {
-        _topCoins = topCoins;
-        _allCoins = allCoins;
-        _isLoading = false;
-      });
-    } catch (e) {
-      print('Error fetching coin data: $e');
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  Future<void> _fetchCryptos() async {
+    _cryptoList = CryptoService().fetchCryptos();
+    final cryptos = await _cryptoList;
+    setState(() {
+      _filteredCryptos = cryptos;
+    });
+  }
+
+  void _filterCryptos(String query) {
+    setState(() {
+      _searchQuery = query;
+      if (_searchQuery.isEmpty) {
+        _filteredCryptos = [];
+      } else {
+        _filteredCryptos = _filteredCryptos
+            .where((crypto) =>
+                crypto.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-
     return Scaffold(
-      backgroundColor: Color(0xFF0D1117),
-      appBar: AppBar(
-        backgroundColor: Color(0xFF161B22),
-        title: Text('Cointos Home'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: _fetchCoinData,
-          ),
-        ],
-      ),
-      drawer: _buildSidebar(context, authProvider),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: Color(0xFF0D9488)))
-          : _buildHomeContent(),
-    );
-  }
-
-  Widget _buildSidebar(BuildContext context, AuthProvider authProvider) {
-    return Drawer(
-      child: Container(
-        color: Color(0xFF161B22),
-        child: ListView(
-          padding: EdgeInsets.zero,
+      body: Padding(
+        padding: const EdgeInsets.only(top: 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Color(0xFF0D9488)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.person, size: 40, color: Color(0xFF0D9488)),
+                  const SizedBox(height: 20.0),
+                  const Text(
+                    'Cryptotos',
+                    style: TextStyle(color: Colors.white, fontSize: 28),
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    authProvider.user?.email ?? 'User',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  const SizedBox(height: 10.0),
+                  TextField(
+                    onChanged: _filterCryptos,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 20.0),
+                      hintText: 'Search',
+                      hintStyle: const TextStyle(color: Colors.white54),
+                      filled: true,
+                      fillColor: Colors.grey[800],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-            ListTile(
-              leading: Icon(Icons.person, color: Colors.white),
-              title: Text('Profile', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfileScreen()),
-                );
-              },
-            ),
-            Spacer(),
-            ListTile(
-              leading: Icon(Icons.exit_to_app, color: Colors.white),
-              title: Text('Sign Out', style: TextStyle(color: Colors.white)),
-              onTap: () async {
-                await authProvider.logout();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHomeContent() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Top Coins',
-              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Container(
-            height: 200,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _topCoins.length,
-              itemBuilder: (context, index) {
-                return _buildTopCoinCard(_topCoins[index]);
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'All Coins',
-              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: _allCoins.length,
-            itemBuilder: (context, index) {
-              return _buildCoinListItem(_allCoins[index]);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTopCoinCard(Coin coin) {
-    return Card(
-      color: Color(0xFF161B22),
-      margin: EdgeInsets.all(8),
-      child: Container(
-        width: 200,
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              coin.name,
-              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(
-              '\$${coin.currentPrice.toStringAsFixed(2)}',
-              style: TextStyle(color: Color(0xFF0D9488), fontSize: 24, fontWeight: FontWeight.bold),
-            ),
+            const SizedBox(height: 20.0),
             Expanded(
-              child: _buildMiniChart(coin.sparklineIn7d),
+              child: FutureBuilder<List<Crypto>>(
+                future: _cryptoList,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                        child: Text('Error: ${snapshot.error}',
+                            style: const TextStyle(color: Colors.white)));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                        child: Text('No data available',
+                            style: TextStyle(color: Colors.white)));
+                  } else {
+                    final List<Crypto> displayedCryptos = _searchQuery.isEmpty
+                        ? snapshot.data!
+                        : _filteredCryptos;
+
+                    return RefreshIndicator(
+                      onRefresh: _fetchCryptos,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        itemCount: displayedCryptos.length,
+                        itemBuilder: (context, index) {
+                          final crypto = displayedCryptos[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: ListTile(
+                              leading: Image.network(
+                                crypto.image,
+                                width: 50,
+                                height: 50,
+                              ),
+                              title: Text(crypto.name,
+                                  style: const TextStyle(color: Colors.white)),
+                              subtitle: Text(
+                                'Price: \$${crypto.currentPrice.toStringAsFixed(2)}',
+                                style: const TextStyle(color: Colors.white70),
+                              ),
+                              tileColor: Colors.grey[900],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        CryptoDetailScreen(crypto: crypto),
+                                  ),
+                                );
+                              },
+                              trailing: PopupMenuButton(
+                                onSelected: (value) {
+                                  if (value == 'favorite') {
+                                    widget.onAddFavorite(crypto);
+                                  } else if (value == 'watchlist') {
+                                    widget.onAddWatchlist(crypto);
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  const PopupMenuItem(
+                                    value: 'favorite',
+                                    child: Text('Add to Favorites'),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'watchlist',
+                                    child: Text('Add to Watchlist'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildCoinListItem(Coin coin) {
-    return ListTile(
-      title: Text(coin.name, style: TextStyle(color: Colors.white)),
-      subtitle: Text(coin.symbol.toUpperCase(), style: TextStyle(color: Colors.grey)),
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            '\$${coin.currentPrice.toStringAsFixed(2)}',
-            style: TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 4),
-          Container(
-            width: 60,
-            height: 30,
-            child: _buildMiniChart(coin.sparklineIn7d),
-          ),
-        ],
+class FavoritesScreen extends StatelessWidget {
+  final List<Crypto> favorites;
+
+  const FavoritesScreen({super.key, required this.favorites});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: ListView.builder(
+        itemCount: favorites.length,
+        itemBuilder: (context, index) {
+          final crypto = favorites[index];
+          return ListTile(
+            leading: Image.network(
+              crypto.image,
+              width: 50,
+              height: 50,
+            ),
+            title:
+                Text(crypto.name, style: const TextStyle(color: Colors.white)),
+            subtitle: Text(
+              'Price: \$${crypto.currentPrice.toStringAsFixed(2)}',
+              style: const TextStyle(color: Colors.white70),
+            ),
+          );
+        },
       ),
     );
   }
+}
 
-  Widget _buildMiniChart(List<double> data) {
-    return LineChart(
-      LineChartData(
-        gridData: FlGridData(show: false),
-        titlesData: FlTitlesData(show: false),
-        borderData: FlBorderData(show: false),
-        minX: 0,
-        maxX: data.length.toDouble() - 1,
-        minY: data.reduce((a, b) => a < b ? a : b),
-        maxY: data.reduce((a, b) => a > b ? a : b),
-        lineBarsData: [
-          LineChartBarData(
-            spots: data.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value)).toList(),
-            isCurved: true,
-            color: Color(0xFF0D9488),
-            barWidth: 2,
-            isStrokeCapRound: true,
-            dotData: FlDotData(show: false),
-            belowBarData: BarAreaData(show: false),
-          ),
-        ],
+class WatchlistScreen extends StatelessWidget {
+  final List<Crypto> watchlist;
+
+  const WatchlistScreen({super.key, required this.watchlist});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: ListView.builder(
+        itemCount: watchlist.length,
+        itemBuilder: (context, index) {
+          final crypto = watchlist[index];
+          return ListTile(
+            leading: Image.network(
+              crypto.image,
+              width: 50,
+              height: 50,
+            ),
+            title:
+                Text(crypto.name, style: const TextStyle(color: Colors.white)),
+            subtitle: Text(
+              'Price: \$${crypto.currentPrice.toStringAsFixed(2)}',
+              style: const TextStyle(color: Colors.white70),
+            ),
+          );
+        },
       ),
     );
   }
