@@ -20,7 +20,6 @@ class _LoginScreenState extends State<LoginScreen>
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  // Error message variables
   String? _emailError;
   String? _passwordError;
 
@@ -59,6 +58,115 @@ class _LoginScreenState extends State<LoginScreen>
     _passwordController.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _handleLogin(AuthProvider authProvider) async {
+    setState(() {
+      _emailError = null;
+      _passwordError = null;
+    });
+
+    if (_formKey.currentState!.validate()) {
+      try {
+        await authProvider.login(
+          _emailController.text,
+          _passwordController.text,
+        );
+
+        // Navigate to HomeScreen on successful login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } on FirebaseAuthException catch (e) {
+        switch (e.code) {
+          case 'user-not-found':
+            setState(() {
+              _emailError = 'No account found for this email.';
+            });
+            _showErrorDialog(
+              'Account Not Found',
+              'Would you like to create an account?',
+            );
+            break;
+          case 'wrong-password':
+            setState(() {
+              _passwordError = 'Incorrect password.';
+            });
+            break;
+          case 'invalid-email':
+            setState(() {
+              _emailError = 'Invalid email address.';
+            });
+            break;
+          case 'user-disabled':
+            _showErrorDialog('Account Disabled',
+                'Your account has been disabled. Please contact support.');
+            break;
+          default:
+            _showErrorDialog('Login Error', 'An unexpected error occurred.');
+        }
+      } catch (e) {
+        _showErrorDialog('Error', 'An unexpected error occurred.');
+      }
+    }
+  }
+
+  Future<void> _handleGoogleSignIn(AuthProvider authProvider) async {
+    try {
+      UserCredential? userCredential = await authProvider.signInWithGoogle();
+      if (userCredential != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      switch (e.code) {
+        case 'account-exists-with-different-credential':
+          errorMessage = 'An account already exists with this email.';
+          break;
+        case 'invalid-credential':
+          errorMessage = 'The credential is invalid or has expired.';
+          break;
+        case 'operation-not-allowed':
+          errorMessage = 'Google sign-in is not enabled for this project.';
+          break;
+        case 'user-disabled':
+          errorMessage = 'This account has been disabled.';
+          break;
+        case 'user-not-found':
+          errorMessage = 'No user found for this email.';
+          break;
+        default:
+          errorMessage = 'An unexpected error occurred.';
+      }
+      _showErrorDialog('Google Sign-In Error', errorMessage);
+    } catch (e) {
+      _showErrorDialog(
+          'Error', 'An unexpected error occurred during Google sign-in.');
+    }
   }
 
   @override
@@ -107,10 +215,6 @@ class _LoginScreenState extends State<LoginScreen>
                                 borderSide: BorderSide.none,
                               ),
                               errorText: _emailError,
-                              errorStyle: const TextStyle(
-                                color: Colors.red,
-                                fontSize: 12,
-                              ),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -122,19 +226,6 @@ class _LoginScreenState extends State<LoginScreen>
                               return null;
                             },
                           ),
-                          // Error message for email field
-                          if (_emailError != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(
-                                _emailError!,
-                                style: const TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-
                           const SizedBox(height: 16.0),
                           TextFormField(
                             controller: _passwordController,
@@ -150,10 +241,6 @@ class _LoginScreenState extends State<LoginScreen>
                                 borderSide: BorderSide.none,
                               ),
                               errorText: _passwordError,
-                              errorStyle: const TextStyle(
-                                color: Colors.red,
-                                fontSize: 12,
-                              ),
                             ),
                             obscureText: true,
                             validator: (value) {
@@ -163,102 +250,9 @@ class _LoginScreenState extends State<LoginScreen>
                               return null;
                             },
                           ),
-
-                          // Error message for password field
-                          if (_passwordError != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(
-                                _passwordError!,
-                                style: const TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-
                           const SizedBox(height: 32.0),
                           ElevatedButton(
-                            onPressed: () async {
-                              setState(() {
-                                _emailError = null;
-                                _passwordError = null;
-                              });
-
-                              if (_formKey.currentState!.validate()) {
-                                await authProvider.login(
-                                  _emailController.text,
-                                  _passwordController.text,
-                                );
-
-                                if (authProvider.isLoading) {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (context) => const AlertDialog(
-                                      backgroundColor: Color(0xFF161B22),
-                                      content: Row(
-                                        children: [
-                                          CircularProgressIndicator(
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                              Color(0xFF0D9488),
-                                            ),
-                                          ),
-                                          SizedBox(width: 16),
-                                          Text(
-                                            'Logging in...',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  Navigato.pop(
-                                      context); // Close loading dialog if open
-
-                                  if (authProvider.errorMessage != null) {
-                                    // Handle specific Firebase errors with better messages
-                                    if (authProvider.errorMessage!
-                                        .contains('user-not-found')) {
-                                      setState(() {
-                                        _emailError =
-                                            'No account found for this email. Sign up?';
-                                      });
-                                    } else if (authProvider.errorMessage!
-                                        .contains('wrong-password')) {
-                                      setState(() {
-                                        _passwordError = 'Incorrect password.';
-                                      });
-                                    } else {
-                                      // Generic error handling
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          backgroundColor:
-                                              const Color(0xFF161B22),
-                                          content: Text(
-                                            authProvider.errorMessage!,
-                                            style: const TextStyle(
-                                                color: Colors.white),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  } else {
-                                    // Successful login, navigate to HomeScreen
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const HomeScreen()),
-                                    );
-                                  }
-                                }
-                              }
-                            },
+                            onPressed: () => _handleLogin(authProvider),
                             style: ElevatedButton.styleFrom(
                               foregroundColor: const Color(0xFF0D9488),
                               backgroundColor: Colors.white,
@@ -291,49 +285,21 @@ class _LoginScreenState extends State<LoginScreen>
                             ],
                           ),
                           const SizedBox(height: 32.0),
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            spacing: 16.0,
-                            runSpacing: 16.0,
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () async {
-                                  UserCredential? userCredential =
-                                      await authProvider.signInWithGoogle();
-                                  if (userCredential != null) {
-                                    // Navigate to HomeScreen or handle success
-                                    if (kDebugMode) {
-                                      print(
-                                          "Google sign-in successful: ${userCredential.user?.email}");
-                                    }
-                                    // TODO: Implement navigation or success handling
-                                  } else {
-                                    // Handle Google sign-in failure (e.g., show an error message)
-                                    if (kDebugMode) {
-                                      print("Google sign-in failed");
-                                    }
-                                    // TODO: Implement error handling
-                                  }
-                                },
-                                icon: const Icon(Icons.g_mobiledata),
-                                label: const Text('Google'),
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: const Color(0xFF0D9488),
-                                  backgroundColor: const Color(0xFF161B22),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0, horizontal: 16.0),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                ),
+                          ElevatedButton.icon(
+                            onPressed: () => _handleGoogleSignIn(authProvider),
+                            icon: const Icon(Icons.g_mobiledata),
+                            label: const Text('Sign in with Google'),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: const Color(0xFF0D9488),
+                              backgroundColor: const Color(0xFF161B22),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12.0, horizontal: 16.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
                               ),
-                              // TODO: Add Facebook sign-in button here if needed
-                            ],
+                            ),
                           ),
-
                           const SizedBox(height: 24.0),
-
-                          // Sign Up button
                           TextButton(
                             onPressed: () {
                               Navigator.push(
