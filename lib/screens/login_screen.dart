@@ -216,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     ),
                                   );
                                 } else {
-                                  Navigator.pop(
+                                  Navigato.pop(
                                       context); // Close loading dialog if open
 
                                   if (authProvider.errorMessage != null) {
