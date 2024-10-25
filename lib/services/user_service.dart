@@ -27,27 +27,41 @@ class UserService {
       User? user = result.user;
 
       if (user != null) {
-        await _createUserDocument(user.uid, name, email, phone);
+        await createOrUpdateUser(
+          userId: user.uid,
+          name: name,
+          email: email,
+          phone: phone,
+        );
       }
 
       return user;
     } catch (e) {
       _logger.e('Sign up error', error: e);
-      return null;
+      rethrow;
     }
   }
 
-  Future<void> _createUserDocument(
-      String userId, String name, String email, String phone) async {
-    await _firestore.collection('users').doc(userId).set({
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'userId': userId,
-      'points': 0,
-      'role': 'user',
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+  Future<void> createOrUpdateUser({
+    required String userId,
+    required String name,
+    required String email,
+    required String phone,
+  }) async {
+    try {
+      await _firestore.collection('users').doc(userId).set({
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'userId': userId,
+        'points': 0,
+        'role': 'user',
+        'createdAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      _logger.e('Error creating/updating user document', error: e);
+      rethrow;
+    }
   }
 
   Future<void> awardPoints(int points) async {
@@ -87,7 +101,8 @@ class UserService {
           throw Exception('User document not found');
         }
       } catch (e) {
-        throw Exception('Failed to load user data: $e');
+        _logger.e('Failed to load user data', error: e);
+        rethrow;
       }
     } else {
       throw Exception('No authenticated user');

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import '../services/crypto_service.dart';
 import 'crypto_detail_screen.dart';
 import '../models/crypto_model.dart';
-import 'profile_screen.dart';
-import 'rewards_screen.dart';
+import 'account_screen.dart';
+import 'portfolio_screen.dart';
+import 'news_screen.dart';
+import 'package:logger/logger.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,36 +18,25 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final List<Crypto> _favorites = [];
   final List<Crypto> _watchlist = [];
+  final List<Crypto> _portfolio = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        leading: IconButton(
-          icon: const Icon(Icons.person),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProfileScreen()),
-          ),
-        ),
-      ),
       body: IndexedStack(
         index: _currentIndex,
         children: [
           CryptoListScreen(
             onAddFavorite: _addToFavorites,
             onAddWatchlist: _addToWatchlist,
+            onAddPortfolio: _addToPortfolio,
           ),
           FavoritesScreen(favorites: _favorites),
           WatchlistScreen(watchlist: _watchlist),
+          PortfolioScreen(portfolio: _portfolio),
+          const NewsScreen(),
+          const AccountScreen(),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.chat),
-        onPressed: () {
-          // Implement chat functionality
-        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -53,18 +44,17 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() {
             _currentIndex = index;
           });
-          if (index == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const RewardsScreen()),
-            );
-          }
         },
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.article), label: 'Articles'),
+          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Favorites'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.card_giftcard), label: 'Rewards'),
+              icon: Icon(Icons.visibility), label: 'Watchlist'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_balance_wallet), label: 'Portfolio'),
+          BottomNavigationBarItem(icon: Icon(Icons.article), label: 'News'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
         ],
       ),
     );
@@ -83,16 +73,26 @@ class _HomeScreenState extends State<HomeScreen> {
       _watchlist.add(crypto);
     }
   }
+
+  void _addToPortfolio(Crypto crypto) {
+    setState(() {
+      if (!_portfolio.contains(crypto)) {
+        _portfolio.add(crypto);
+      }
+    });
+  }
 }
 
 class CryptoListScreen extends StatefulWidget {
   final Function(Crypto) onAddFavorite;
   final Function(Crypto) onAddWatchlist;
+  final Function(Crypto) onAddPortfolio;
 
   const CryptoListScreen({
     super.key,
     required this.onAddFavorite,
     required this.onAddWatchlist,
+    required this.onAddPortfolio,
   });
 
   @override
@@ -100,6 +100,7 @@ class CryptoListScreen extends StatefulWidget {
 }
 
 class _CryptoListScreenState extends State<CryptoListScreen> {
+  final Logger _logger = Logger();
   late Future<List<Crypto>> _cryptoList;
   List<Crypto> _filteredCryptos = [];
   String _searchQuery = '';
@@ -118,12 +119,12 @@ class _CryptoListScreenState extends State<CryptoListScreen> {
         _filteredCryptos = cryptos;
       });
     } catch (e) {
-      // Handle the error, e.g., show an error message to the user
-      print('Error fetching cryptos: $e');
+      _logger.e('Error fetching cryptos: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text(
-                'Failed to load cryptocurrencies. Please try again later.')),
+          content:
+              Text('Failed to load cryptocurrencies. Please try again later.'),
+        ),
       );
     }
   }
@@ -240,6 +241,8 @@ class _CryptoListScreenState extends State<CryptoListScreen> {
                                     widget.onAddFavorite(crypto);
                                   } else if (value == 'watchlist') {
                                     widget.onAddWatchlist(crypto);
+                                  } else if (value == 'portfolio') {
+                                    widget.onAddPortfolio(crypto);
                                   }
                                 },
                                 itemBuilder: (context) => [
@@ -250,6 +253,10 @@ class _CryptoListScreenState extends State<CryptoListScreen> {
                                   const PopupMenuItem(
                                     value: 'watchlist',
                                     child: Text('Add to Watchlist'),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'portfolio',
+                                    child: Text('Add to Portfolio'),
                                   ),
                                 ],
                               ),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../services/user_service.dart';
+import 'package:logger/logger.dart';
 
 class ProfileScreen extends StatelessWidget {
   final UserService _userService = UserService();
+  final Logger _logger = Logger();
 
   ProfileScreen({super.key});
 
@@ -36,8 +38,7 @@ class ProfileScreen extends StatelessWidget {
     try {
       return await _userService.getUserData();
     } catch (e) {
-      print('Error loading user data: $e');
-      // Return a map with error information or rethrow the exception
+      _logger.e('Error loading user data', error: e);
       return {'error': 'Failed to load user data'};
     }
   }

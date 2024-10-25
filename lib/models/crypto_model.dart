@@ -8,6 +8,7 @@ class Crypto {
   final double? high24h;
   final double? low24h;
   final double? priceChangePercentage24h;
+  double holdings;
 
   Crypto({
     required this.id,
@@ -19,6 +20,7 @@ class Crypto {
     this.high24h,
     this.low24h,
     this.priceChangePercentage24h,
+    this.holdings = 0,
   });
 
   factory Crypto.fromJson(Map<String, dynamic> json) {
