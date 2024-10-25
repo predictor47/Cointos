@@ -47,40 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> widgetOptions = <Widget>[
-      ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.star, color: Theme.of(context).primaryColor),
-              title: const Text('Your Points'),
-              subtitle: const Text('1000'), // Replace with actual point value
-            ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const RewardsScreen()),
-              );
-            },
-            child: const Text('View Rewards'),
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-      CryptoListScreen(
-        onAddFavorite: _addToFavorites,
-        onAddWatchlist: _addToWatchlist,
-        onAddPortfolio: _addToPortfolio,
-      ),
-      PortfolioScreen(portfolio: _portfolio),
-      const NewsScreen(),
-      FavoritesScreen(favorites: _favorites),
-    ];
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cryptotos'),
@@ -96,13 +62,23 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          CryptoListScreen(
+            onAddFavorite: _addToFavorites,
+            onAddWatchlist: _addToWatchlist,
+            onAddPortfolio: _addToPortfolio,
           ),
+          PortfolioScreen(portfolio: _portfolio),
+          const NewsScreen(),
+          FavoritesScreen(favorites: _favorites),
+          const RewardsScreen(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
             label: 'Cryptos',
@@ -118,6 +94,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.star),
             label: 'Favorites',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.card_giftcard),
+            label: 'Rewards',
           ),
         ],
         currentIndex: _selectedIndex,
