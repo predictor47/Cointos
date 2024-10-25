@@ -10,7 +10,7 @@ class NewsService {
   // static const String baseUrl = 'https://min-api.cryptocompare.com/data/v2';
 
   // Replace with your API key from newsapi.org
-  static const String apiKey = 'YOUR_API_KEY';
+  static const String apiKey = 'a9b366c9973e420eb982a19fe82d3a16';
 
   Future<List<Article>> fetchNews(int page) async {
     try {

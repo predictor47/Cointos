@@ -7,7 +7,7 @@ import 'article_detail_screen.dart';
 import 'package:intl/intl.dart';
 
 class NewsScreen extends StatefulWidget {
-  const NewsScreen({Key? key}) : super(key: key);
+  const NewsScreen({super.key});
 
   @override
   _NewsScreenState createState() => _NewsScreenState();
@@ -16,7 +16,7 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   final ScrollController _scrollController = ScrollController();
   final NewsService _newsService = NewsService();
-  List<Article> _articles = [];
+  final List<Article> _articles = [];
   int _currentPage = 1;
   bool _isLoading = false;
   bool _hasMore = true;
@@ -134,7 +134,7 @@ class _NewsScreenState extends State<NewsScreen> {
           const SizedBox(height: 16),
           Text(
             _isError ? 'Error loading news' : 'No articles available',
-            style: Theme.of(context).textTheme.headline6?.copyWith(
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Colors.grey,
                 ),
           ),
@@ -164,7 +164,7 @@ class _NewsScreenState extends State<NewsScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Text(
             'No more articles',
-            style: Theme.of(context).textTheme.caption,
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ),
       );
@@ -220,29 +220,30 @@ class _NewsScreenState extends State<NewsScreen> {
                       Expanded(
                         child: Text(
                           article.source,
-                          style: Theme.of(context).textTheme.caption?.copyWith(
-                                color: Theme.of(context).primaryColor,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ),
                       Text(
                         '$formattedDate at $formattedTime',
-                        style: Theme.of(context).textTheme.caption,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Text(
                     article.title,
-                    style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     article.description,
-                    style: Theme.of(context).textTheme.bodyText2,
+                    style: Theme.of(context).textTheme.bodyMedium,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'login_screen.dart';
+import '../services/user_service.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -14,18 +15,22 @@ class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final UserService _userService = UserService();
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _nameController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-
     return Scaffold(
       backgroundColor: const Color(0xFF0D1117), // Dark background
       appBar: AppBar(
@@ -93,92 +98,99 @@ class _SignupScreenState extends State<SignupScreen> {
                     return null;
                   },
                 ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _nameController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Name',
+                    hintStyle: const TextStyle(color: Color(0xFF8B949E)),
+                    filled: true,
+                    fillColor: const Color(0xFF161B22),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _phoneController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Phone',
+                    hintStyle: const TextStyle(color: Color(0xFF8B949E)),
+                    filled: true,
+                    fillColor: const Color(0xFF161B22),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your phone number';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 48),
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      await authProvider.signup(
-                        _emailController.text,
-                        _passwordController.text,
-                      );
+                      setState(() {
+                        _isLoading = true;
+                      });
 
-                      if (authProvider.isLoading) {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) => const AlertDialog(
-                            backgroundColor:
-                                Color(0xFF161B22), // Dark dialog background
-                            content: Row(
-                              children: [
-                                CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Color(0xFF0D9488), // Accent color
-                                  ),
-                                ),
-                                SizedBox(width: 16),
-                                Text(
-                                  'Signing up...',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
+                      try {
+                        await _userService.signUp(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                          name: _nameController.text,
+                          phone: _phoneController.text,
                         );
-                      } else {
-                        Navigator.pop(context);
 
-                        if (authProvider.errorMessage != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor:
-                                  const Color(0xFF161B22), // Dark snackbar background
-                              content: Text(
-                                authProvider.errorMessage!,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          );
-                        } else {
+                        if (_isLoading) {
                           showDialog(
                             context: context,
-                            builder: (context) => AlertDialog(
-                              backgroundColor:
-                                  const Color(0xFF161B22), // Dark dialog background
-                              title: const Text(
-                                'Signup Successful',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              content: const Text(
-                                'You have successfully signed up. Please log in.',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => const LoginScreen()),
-                                    );
-                                  },
-                                  child: const Text(
-                                    'OK',
+                            barrierDismissible: false,
+                            builder: (context) => const AlertDialog(
+                              backgroundColor: Color(0xFF161B22),
+                              content: Row(
+                                children: [
+                                  CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color(0xFF0D9488),
+                                    ),
+                                  ),
+                                  SizedBox(width: 16),
+                                  Text(
+                                    'Signing up...',
                                     style: TextStyle(color: Colors.white),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         }
+                      } finally {
+                        setState(() {
+                          _isLoading = false;
+                        });
                       }
                     }
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: const Color(0xFF0D9488),
                     backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
                     textStyle: const TextStyle(fontSize: 18),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -191,7 +203,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()),
                     );
                   },
                   style: TextButton.styleFrom(

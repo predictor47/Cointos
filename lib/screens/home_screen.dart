@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../services/crypto_service.dart';
 import 'crypto_detail_screen.dart';
 import '../models/crypto_model.dart';
+import 'profile_screen.dart';
+import 'rewards_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,6 +20,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+        leading: IconButton(
+          icon: const Icon(Icons.person),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileScreen()),
+          ),
+        ),
+      ),
       body: IndexedStack(
         index: _currentIndex,
         children: [
@@ -29,29 +41,30 @@ class _HomeScreenState extends State<HomeScreen> {
           WatchlistScreen(watchlist: _watchlist),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.chat),
+        onPressed: () {
+          // Implement chat functionality
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        backgroundColor: Colors.grey[900],
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
         onTap: (index) {
           setState(() {
             _currentIndex = index;
           });
+          if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const RewardsScreen()),
+            );
+          }
         },
         items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.article), label: 'Articles'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Cryptos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.watch_later),
-            label: 'Watchlist',
-          ),
+              icon: Icon(Icons.card_giftcard), label: 'Rewards'),
         ],
       ),
     );
@@ -66,11 +79,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _addToWatchlist(Crypto crypto) {
-    setState(() {
-      if (!_watchlist.contains(crypto)) {
-        _watchlist.add(crypto);
-      }
-    });
+    if (!_watchlist.contains(crypto)) {
+      _watchlist.add(crypto);
+    }
   }
 }
 
@@ -100,11 +111,21 @@ class _CryptoListScreenState extends State<CryptoListScreen> {
   }
 
   Future<void> _fetchCryptos() async {
-    _cryptoList = CryptoService().fetchCryptos();
-    final cryptos = await _cryptoList;
-    setState(() {
-      _filteredCryptos = cryptos;
-    });
+    try {
+      _cryptoList = CryptoService().fetchCryptos();
+      final cryptos = await _cryptoList;
+      setState(() {
+        _filteredCryptos = cryptos;
+      });
+    } catch (e) {
+      // Handle the error, e.g., show an error message to the user
+      print('Error fetching cryptos: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text(
+                'Failed to load cryptocurrencies. Please try again later.')),
+      );
+    }
   }
 
   void _filterCryptos(String query) {
