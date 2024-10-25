@@ -8,27 +8,47 @@ import 'news_screen.dart';
 import 'package:logger/logger.dart';
 import 'rewards_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+  final List<Crypto> _favorites = [];
+  final List<Crypto> _watchlist = [];
+  final List<Crypto> _portfolio = [];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  void _addToFavorites(Crypto crypto) {
+    setState(() {
+      _favorites.add(crypto);
+    });
+  }
+
+  void _addToWatchlist(Crypto crypto) {
+    setState(() {
+      _watchlist.add(crypto);
+    });
+  }
+
+  void _addToPortfolio(Crypto crypto) {
+    setState(() {
+      _portfolio.add(crypto);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AccountScreen()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: ListView(
+    final List<Widget> widgetOptions = <Widget>[
+      ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           Card(
@@ -49,8 +69,59 @@ class HomeScreen extends StatelessWidget {
             child: const Text('View Rewards'),
           ),
           const SizedBox(height: 16),
-          // Add more widgets as needed for your home screen
         ],
+      ),
+      CryptoListScreen(
+        onAddFavorite: _addToFavorites,
+        onAddWatchlist: _addToWatchlist,
+        onAddPortfolio: _addToPortfolio,
+      ),
+      PortfolioScreen(portfolio: _portfolio),
+      const NewsScreen(),
+      FavoritesScreen(favorites: _favorites),
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Cryptotos'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AccountScreen()),
+              );
+            },
+          ),
+        ],
+      ),
+      body: widgetOptions.elementAt(_selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Cryptos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_balance_wallet),
+            label: 'Portfolio',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.article),
+            label: 'News',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.star),
+            label: 'Favorites',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
