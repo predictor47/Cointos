@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => AuthProvider(),
       child: MaterialApp(
-        title: 'Your App Name',
+        title: 'Cointos',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode:
