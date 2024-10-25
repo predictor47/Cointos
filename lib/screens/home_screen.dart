@@ -6,80 +6,53 @@ import 'account_screen.dart';
 import 'portfolio_screen.dart';
 import 'news_screen.dart';
 import 'package:logger/logger.dart';
+import 'rewards_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
-  final List<Crypto> _favorites = [];
-  final List<Crypto> _watchlist = [];
-  final List<Crypto> _portfolio = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          CryptoListScreen(
-            onAddFavorite: _addToFavorites,
-            onAddWatchlist: _addToWatchlist,
-            onAddPortfolio: _addToPortfolio,
+      appBar: AppBar(
+        title: const Text('Home'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AccountScreen()),
+              );
+            },
           ),
-          FavoritesScreen(favorites: _favorites),
-          WatchlistScreen(watchlist: _watchlist),
-          PortfolioScreen(portfolio: _portfolio),
-          const NewsScreen(),
-          const AccountScreen(),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Favorites'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.visibility), label: 'Watchlist'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.account_balance_wallet), label: 'Portfolio'),
-          BottomNavigationBarItem(icon: Icon(Icons.article), label: 'News'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.star, color: Theme.of(context).primaryColor),
+              title: const Text('Your Points'),
+              subtitle: const Text('1000'), // Replace with actual point value
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const RewardsScreen()),
+              );
+            },
+            child: const Text('View Rewards'),
+          ),
+          const SizedBox(height: 16),
+          // Add more widgets as needed for your home screen
         ],
       ),
     );
-  }
-
-  void _addToFavorites(Crypto crypto) {
-    setState(() {
-      if (!_favorites.contains(crypto)) {
-        _favorites.add(crypto);
-      }
-    });
-  }
-
-  void _addToWatchlist(Crypto crypto) {
-    if (!_watchlist.contains(crypto)) {
-      _watchlist.add(crypto);
-    }
-  }
-
-  void _addToPortfolio(Crypto crypto) {
-    setState(() {
-      if (!_portfolio.contains(crypto)) {
-        _portfolio.add(crypto);
-      }
-    });
   }
 }
 

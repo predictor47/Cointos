@@ -7,6 +7,7 @@ import '../services/user_service.dart';
 import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
 import 'home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,12 +23,8 @@ class _LoginScreenState extends State<LoginScreen>
   final _passwordController = TextEditingController();
 
   // Error message variables
-  String? _emailError;
-  String? _passwordError;
 
   late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _slideAnimation;
 
   bool _isLoading = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -38,20 +35,6 @@ class _LoginScreenState extends State<LoginScreen>
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ),
-    );
-
-    _slideAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ),
     );
 
     _animationController.forward();
@@ -69,8 +52,6 @@ class _LoginScreenState extends State<LoginScreen>
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
-        _emailError = null;
-        _passwordError = null;
       });
 
       try {
@@ -79,19 +60,20 @@ class _LoginScreenState extends State<LoginScreen>
           password: _passwordController.text,
         );
 
+        // Save login time
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt(
+            'lastLoginTime', DateTime.now().millisecondsSinceEpoch);
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
-          setState(() {
-            _emailError = 'No account found for this email. Sign up?';
-          });
+          setState(() {});
         } else if (e.code == 'wrong-password') {
-          setState(() {
-            _passwordError = 'Incorrect password. Please try again.';
-          });
+          setState(() {});
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -117,243 +99,60 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
+    Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1117),
+      appBar: AppBar(title: const Text('Login')),
       body: SingleChildScrollView(
-        child: Center(
-          child: AnimatedBuilder(
-            animation: _animationController,
-            builder: (context, child) {
-              return Opacity(
-                opacity: _fadeAnimation.value,
-                child: Transform.translate(
-                  offset: Offset(0, _slideAnimation.value * 50),
-                  child: Padding(
-                    padding: const EdgeInsets.all(32.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const Text(
-                            'Welcome Back 👋',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 32.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 32.0),
-                          TextFormField(
-                            controller: _emailController,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              hintText: 'Email',
-                              hintStyle:
-                                  const TextStyle(color: Color(0xFF8B949E)),
-                              filled: true,
-                              fillColor: const Color(0xFF161B22),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: BorderSide.none,
-                              ),
-                              errorText: _emailError,
-                              errorStyle: const TextStyle(
-                                color: Colors.red,
-                                fontSize: 12,
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your email';
-                              }
-                              if (!value.contains('@')) {
-                                return 'Please enter a valid email';
-                              }
-                              return null;
-                            },
-                          ),
-                          // Error message for email field
-                          if (_emailError != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(
-                                _emailError!,
-                                style: const TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-
-                          const SizedBox(height: 16.0),
-                          TextFormField(
-                            controller: _passwordController,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              hintText: 'Password',
-                              hintStyle:
-                                  const TextStyle(color: Color(0xFF8B949E)),
-                              filled: true,
-                              fillColor: const Color(0xFF161B22),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: BorderSide.none,
-                              ),
-                              errorText: _passwordError,
-                              errorStyle: const TextStyle(
-                                color: Colors.red,
-                                fontSize: 12,
-                              ),
-                            ),
-                            obscureText: true,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              }
-                              return null;
-                            },
-                          ),
-
-                          // Error message for password field
-                          if (_passwordError != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(
-                                _passwordError!,
-                                style: const TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-
-                          const SizedBox(height: 16.0),
-
-                          ElevatedButton(
-                            onPressed:
-                                _isLoading ? null : _signInWithEmailAndPassword,
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: const Color(0xFF0D9488),
-                              backgroundColor: Colors.white,
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                            child: _isLoading
-                                ? const CircularProgressIndicator(
-                                    color: Color(0xFF0D9488))
-                                : const Text('Sign in'),
-                          ),
-                          const SizedBox(height: 16.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ForgotPasswordScreen()),
-                                  );
-                                },
-                                style: TextButton.styleFrom(
-                                  foregroundColor: const Color(0xFF0D9488),
-                                ),
-                                child: const Text('Forgot Password?'),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 32.0),
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            spacing: 16.0,
-                            runSpacing: 16.0,
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () async {
-                                  setState(() {
-                                    _isLoading = true;
-                                  });
-                                  try {
-                                    UserCredential? userCredential =
-                                        await authProvider.signInWithGoogle();
-                                    if (userCredential != null) {
-                                      // Extract data from Google sign-up
-                                      final googleUser = userCredential.user;
-                                      if (googleUser != null) {
-                                        await UserService().createOrUpdateUser(
-                                          userId: googleUser.uid,
-                                          name: googleUser.displayName ?? '',
-                                          email: googleUser.email ?? '',
-                                          phone: googleUser.phoneNumber ?? '',
-                                        );
-                                      }
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const HomeScreen()),
-                                      );
-                                    }
-                                  } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                            'Google sign-in failed: ${e.toString()}'),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  } finally {
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
-                                  }
-                                },
-                                icon: const Icon(Icons.g_mobiledata),
-                                label: const Text('Google'),
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: const Color(0xFF0D9488),
-                                  backgroundColor: const Color(0xFF161B22),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0, horizontal: 16.0),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 24.0),
-
-                          // Sign Up button
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const SignupScreen()),
-                              );
-                            },
-                            style: TextButton.styleFrom(
-                              foregroundColor: const Color(0xFF0D9488),
-                            ),
-                            child: const Text("Don't have an account? Sign Up"),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                  style: const TextStyle(color: Colors.white),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    if (!value.contains('@')) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
                 ),
-              );
-            },
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(labelText: 'Password'),
+                  style: const TextStyle(color: Colors.white),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: _signInWithEmailAndPassword,
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text('Sign In'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Navigate to sign up screen
+                  },
+                  child: const Text("Don't have an account? Sign Up"),
+                ),
+              ],
+            ),
           ),
         ),
       ),

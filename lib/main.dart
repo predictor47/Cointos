@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'screens/splash_screen.dart';
+import 'theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,11 +19,11 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => AuthProvider(),
       child: MaterialApp(
-        title: 'Cointos',
-        theme: ThemeData(
-          primarySwatch: Colors.teal,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
+        title: 'Your App Name',
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode:
+            ThemeMode.system, // This will follow the device's theme setting
         home: const SplashScreen(),
       ),
     );
