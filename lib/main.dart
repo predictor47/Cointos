@@ -20,11 +20,11 @@ class MyApp extends StatelessWidget {
       create: (_) => AuthProvider(),
       child: MaterialApp(
         title: 'Cointos',
-        theme: AppTheme.lightTheme,
+        theme: AppTheme.darkTheme,
         darkTheme: AppTheme.darkTheme,
-        themeMode:
-            ThemeMode.system, // This will follow the device's theme setting
+        themeMode: ThemeMode.dark, // Force dark mode
         home: const SplashScreen(),
+        debugShowCheckedModeBanner: false, // Remove debug banner
       ),
     );
   }
