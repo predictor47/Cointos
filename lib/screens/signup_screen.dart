@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -18,7 +19,6 @@ class _SignupScreenState extends State<SignupScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final UserService _userService = UserService();
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -144,45 +144,41 @@ class _SignupScreenState extends State<SignupScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      setState(() {
-                        _isLoading = true;
-                      });
+                      setState(() {});
 
                       try {
+                        if (kDebugMode) {
+                          print('Attempting to sign up...');
+                        }
                         await _userService.signUp(
                           email: _emailController.text,
                           password: _passwordController.text,
                           name: _nameController.text,
                           phone: _phoneController.text,
                         );
-
-                        if (_isLoading) {
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) => const AlertDialog(
-                              backgroundColor: Color(0xFF161B22),
-                              content: Row(
-                                children: [
-                                  CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Color(0xFF0D9488),
-                                    ),
-                                  ),
-                                  SizedBox(width: 16),
-                                  Text(
-                                    'Signing up...',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
+                        if (kDebugMode) {
+                          print('Signup successful');
                         }
+
+                        // Navigate to another screen or show a success message
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()),
+                        );
+                      } catch (e) {
+                        if (kDebugMode) {
+                          print('Signup failed: $e');
+                        }
+                        // Show an error message to the user
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Signup failed: $e'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
                       } finally {
-                        setState(() {
-                          _isLoading = false;
-                        });
+                        setState(() {});
                       }
                     }
                   },
