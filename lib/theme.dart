@@ -8,6 +8,7 @@ class UpgradedAppTheme {
   static const Color _surfaceColor =
       Color(0xFF1E1E1E); // Slightly Lighter Surface
   static const Color _errorColor = Color(0xFFCF6679); // Soft Red for Errors
+  static const String _fontFamily = 'Poppins';
 
   static ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
@@ -253,4 +254,10 @@ class UpgradedAppTheme {
       ),
     ),
   );
+  static String get fontFamily => UpgradedAppTheme._fontFamily;
+  static Color get errorColor => UpgradedAppTheme._errorColor;
+  static Color get primaryColor => UpgradedAppTheme._primaryColor;
+  static Color get accentColor => UpgradedAppTheme._accentColor;
+  static Color get backgroundColor => UpgradedAppTheme._backgroundColor;
+  static Color get surfaceColor => UpgradedAppTheme._surfaceColor;
 }

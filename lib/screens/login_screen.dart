@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -8,6 +7,7 @@ import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
 import 'home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,8 +21,6 @@ class _LoginScreenState extends State<LoginScreen>
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  // Error message variables
 
   late AnimationController _animationController;
 
@@ -60,7 +58,6 @@ class _LoginScreenState extends State<LoginScreen>
           password: _passwordController.text,
         );
 
-        // Save login time
         final prefs = await SharedPreferences.getInstance();
         await prefs.setInt(
             'lastLoginTime', DateTime.now().millisecondsSinceEpoch);
@@ -70,23 +67,17 @@ class _LoginScreenState extends State<LoginScreen>
           MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       } on FirebaseAuthException catch (e) {
-        if (e.code == 'user-not-found') {
-          setState(() {});
-        } else if (e.code == 'wrong-password') {
-          setState(() {});
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('An error occurred: ${e.message}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.message}'),
+            backgroundColor: UpgradedAppTheme.errorColor,
+          ),
+        );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('An error occurred: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: UpgradedAppTheme.errorColor,
           ),
         );
       } finally {
@@ -102,7 +93,11 @@ class _LoginScreenState extends State<LoginScreen>
     Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      backgroundColor: UpgradedAppTheme.backgroundColor,
+      appBar: AppBar(
+        title: const Text('Login'),
+        elevation: 0,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -113,8 +108,17 @@ class _LoginScreenState extends State<LoginScreen>
               children: [
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                      fontFamily: UpgradedAppTheme.fontFamily,
+                    ),
+                  ),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: UpgradedAppTheme.fontFamily,
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
@@ -128,8 +132,17 @@ class _LoginScreenState extends State<LoginScreen>
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    labelStyle: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                      fontFamily: UpgradedAppTheme.fontFamily,
+                    ),
+                  ),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: UpgradedAppTheme.fontFamily,
+                  ),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -141,10 +154,38 @@ class _LoginScreenState extends State<LoginScreen>
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _signInWithEmailAndPassword,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: UpgradedAppTheme.primaryColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Sign In'),
+                      : Text('Sign In',
+                          style: TextStyle(
+                              fontFamily: UpgradedAppTheme.fontFamily)),
                 ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ForgotPasswordScreen()),
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: UpgradedAppTheme.primaryColor,
+                  ),
+                  child: Text(
+                    "Forgot Password?",
+                    style: TextStyle(fontFamily: UpgradedAppTheme.fontFamily),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -153,7 +194,13 @@ class _LoginScreenState extends State<LoginScreen>
                           builder: (context) => const SignupScreen()),
                     );
                   },
-                  child: const Text("Don't have an account? Sign Up"),
+                  style: TextButton.styleFrom(
+                    foregroundColor: UpgradedAppTheme.primaryColor,
+                  ),
+                  child: Text(
+                    "Don't have an account? Sign Up",
+                    style: TextStyle(fontFamily: UpgradedAppTheme.fontFamily),
+                  ),
                 ),
               ],
             ),
