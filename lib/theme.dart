@@ -254,6 +254,9 @@ class UpgradedAppTheme {
       ),
     ),
   );
+  static TextStyle get hintstyle => ThemeData.hintStyle;
+  static Color get appBarTheme => UpgradedAppTheme.appBarTheme;
+  static Color get textColor => UpgradedAppTheme.textColor;
   static String get fontFamily => UpgradedAppTheme._fontFamily;
   static Color get errorColor => UpgradedAppTheme._errorColor;
   static Color get primaryColor => UpgradedAppTheme._primaryColor;

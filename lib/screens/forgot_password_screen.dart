@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../theme.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -24,17 +25,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1117), // Dark background
+      backgroundColor: UpgradedAppTheme.backgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF161B22), // Dark app bar background
-        title: const Text(
+        backgroundColor: UpgradedAppTheme.surfaceColor,
+        title: Text(
           'Forgot Password',
-          style: TextStyle(color: Colors.white), // White text
+          style: TextStyle(
+            color: UpgradedAppTheme.accentColor,
+            fontFamily: UpgradedAppTheme.fontFamily,
+          ),
         ),
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(32.0),
+          padding: const EdgeInsets.all(20.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -42,14 +47,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               children: [
                 TextFormField(
                   controller: _emailController,
-                  style: const TextStyle(color: Colors.white), // White text
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: UpgradedAppTheme.fontFamily,
+                  ),
                   decoration: InputDecoration(
                     hintText: 'Email',
-                    hintStyle: const TextStyle(color: Color(0xFF8B949E)),
+                    hintStyle: TextStyle(
+                      color: Colors.white70,
+                      fontFamily: UpgradedAppTheme.fontFamily,
+                    ),
                     filled: true,
-                    fillColor: const Color(0xFF161B22), // Dark input background
+                    fillColor: UpgradedAppTheme.surfaceColor,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -63,7 +74,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
@@ -73,20 +84,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         showDialog(
                           context: context,
                           barrierDismissible: false,
-                          builder: (context) => const AlertDialog(
-                            backgroundColor:
-                                Color(0xFF161B22), // Dark dialog background
+                          builder: (context) => AlertDialog(
+                            backgroundColor: UpgradedAppTheme.surfaceColor,
                             content: Row(
                               children: [
                                 CircularProgressIndicator(
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    Color(0xFF0D9488), // Accent color
+                                    UpgradedAppTheme.accentColor,
                                   ),
                                 ),
-                                SizedBox(width: 16),
+                                const SizedBox(width: 16),
                                 Text(
                                   'Sending reset email...',
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: UpgradedAppTheme.fontFamily,
+                                  ),
                                 ),
                               ],
                             ),
@@ -98,11 +111,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         if (authProvider.errorMessage != null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              backgroundColor:
-                                  const Color(0xFF161B22), // Dark snackbar background
+                              backgroundColor: UpgradedAppTheme.errorColor,
                               content: Text(
                                 authProvider.errorMessage!,
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: UpgradedAppTheme.fontFamily,
+                                ),
                               ),
                             ),
                           );
@@ -110,22 +125,30 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              backgroundColor:
-                                  const Color(0xFF161B22), // Dark dialog background
-                              title: const Text(
+                              backgroundColor: UpgradedAppTheme.surfaceColor,
+                              title: Text(
                                 'Password Reset Email Sent',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: UpgradedAppTheme.fontFamily,
+                                ),
                               ),
-                              content: const Text(
+                              content: Text(
                                 'Please check your inbox for instructions to reset your password.',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: UpgradedAppTheme.fontFamily,
+                                ),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: const Text(
+                                  child: Text(
                                     'OK',
-                                    style: TextStyle(color: Colors.white),
+                                    style: TextStyle(
+                                      color: UpgradedAppTheme.accentColor,
+                                      fontFamily: UpgradedAppTheme.fontFamily,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -136,12 +159,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: const Color(0xFF0D9488), // Accent color
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                    textStyle: const TextStyle(fontSize: 18),
+                    foregroundColor: Colors.white,
+                    backgroundColor: UpgradedAppTheme.primaryColor,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    textStyle: TextStyle(
+                      fontSize: 18,
+                      fontFamily: UpgradedAppTheme.fontFamily,
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: const Text('Reset Password'),

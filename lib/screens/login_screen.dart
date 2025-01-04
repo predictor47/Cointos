@@ -95,12 +95,18 @@ class _LoginScreenState extends State<LoginScreen>
     return Scaffold(
       backgroundColor: UpgradedAppTheme.backgroundColor,
       appBar: AppBar(
-        title: const Text('Login'),
+        title: Text('Kointos',
+            style: TextStyle(
+              fontFamily: UpgradedAppTheme.fontFamily,
+              color: UpgradedAppTheme.accentColor,
+              fontWeight: FontWeight.bold,
+            )),
         elevation: 0,
+        backgroundColor: UpgradedAppTheme.backgroundColor,
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -108,17 +114,13 @@ class _LoginScreenState extends State<LoginScreen>
               children: [
                 TextFormField(
                   controller: _emailController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
-                    labelStyle: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
-                      fontFamily: UpgradedAppTheme.fontFamily,
-                    ),
+                    hintText: 'Enter your email',
                   ),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: UpgradedAppTheme.fontFamily,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
@@ -132,18 +134,13 @@ class _LoginScreenState extends State<LoginScreen>
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Password',
-                    labelStyle: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
-                      fontFamily: UpgradedAppTheme.fontFamily,
-                    ),
+                    hintText: 'Enter your password',
                   ),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: UpgradedAppTheme.fontFamily,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge,
                   obscureText: true,
+                  textInputAction: TextInputAction.done,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
@@ -155,8 +152,6 @@ class _LoginScreenState extends State<LoginScreen>
                 ElevatedButton(
                   onPressed: _signInWithEmailAndPassword,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: UpgradedAppTheme.primaryColor,
-                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -177,12 +172,12 @@ class _LoginScreenState extends State<LoginScreen>
                           builder: (context) => const ForgotPasswordScreen()),
                     );
                   },
-                  style: TextButton.styleFrom(
-                    foregroundColor: UpgradedAppTheme.primaryColor,
-                  ),
                   child: Text(
                     "Forgot Password?",
-                    style: TextStyle(fontFamily: UpgradedAppTheme.fontFamily),
+                    style: TextStyle(
+                      fontFamily: UpgradedAppTheme.fontFamily,
+                      color: UpgradedAppTheme.primaryColor,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -194,12 +189,12 @@ class _LoginScreenState extends State<LoginScreen>
                           builder: (context) => const SignupScreen()),
                     );
                   },
-                  style: TextButton.styleFrom(
-                    foregroundColor: UpgradedAppTheme.primaryColor,
-                  ),
                   child: Text(
                     "Don't have an account? Sign Up",
-                    style: TextStyle(fontFamily: UpgradedAppTheme.fontFamily),
+                    style: TextStyle(
+                      fontFamily: UpgradedAppTheme.fontFamily,
+                      color: UpgradedAppTheme.primaryColor,
+                    ),
                   ),
                 ),
               ],
