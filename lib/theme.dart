@@ -254,13 +254,19 @@ class UpgradedAppTheme {
       ),
     ),
   );
-  static TextStyle get hintstyle => ThemeData.hintStyle;
-  static Color get appBarTheme => UpgradedAppTheme.appBarTheme;
-  static Color get textColor => UpgradedAppTheme.textColor;
-  static String get fontFamily => UpgradedAppTheme._fontFamily;
-  static Color get errorColor => UpgradedAppTheme._errorColor;
-  static Color get primaryColor => UpgradedAppTheme._primaryColor;
-  static Color get accentColor => UpgradedAppTheme._accentColor;
-  static Color get backgroundColor => UpgradedAppTheme._backgroundColor;
-  static Color get surfaceColor => UpgradedAppTheme._surfaceColor;
+
+  static TextStyle get hintStyle => GoogleFonts.poppins(
+        color: Colors.white38,
+        fontSize: 14,
+      );
+  
+  static ThemeData get currentTheme => darkTheme;
+  
+  static Color get errorColor => _errorColor;
+  static Color get primaryColor => _primaryColor;
+  static Color get accentColor => _accentColor;
+  static Color get backgroundColor => _backgroundColor;
+  static Color get surfaceColor => _surfaceColor;
+  
+  static String get fontFamily => _fontFamily;
 }
