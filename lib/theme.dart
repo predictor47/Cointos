@@ -269,4 +269,20 @@ class UpgradedAppTheme {
   static Color get surfaceColor => _surfaceColor;
   
   static String get fontFamily => _fontFamily;
+
+  static Color get textColor => Colors.white;
+  
+  static AppBarTheme get appBarTheme => AppBarTheme(
+    backgroundColor: _primaryColor,
+    elevation: 0,
+    iconTheme: IconThemeData(color: textColor),
+  );
+  
+  static Color get inputFieldColor => surfaceColor.withOpacity(0.8);
+  
+  static TextStyle get hintTextStyle => TextStyle(
+    color: Colors.white54,
+    fontFamily: fontFamily,
+    fontSize: 14,
+  );
 }

@@ -7,6 +7,9 @@ import 'portfolio_screen.dart';
 import 'news_screen.dart';
 import 'package:logger/logger.dart';
 import 'rewards_screen.dart';
+import 'package:timer/timer.dart';
+import 'package:upgraded_app_theme/upgraded_app_theme.dart';
+import 'package:upgraded_app_widgets/upgraded_app_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,92 +19,139 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-  final List<Crypto> _favorites = [];
-  final List<Crypto> _watchlist = [];
-  final List<Crypto> _portfolio = [];
+  final List<String> categories = ['All', 'DeFi', 'NFT', 'Layer 1', 'Layer 2'];
+  String selectedCategory = 'All';
+  Timer? _priceUpdateTimer;
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
+  @override
+  void initState() {
+    super.initState();
+    _checkTutorial();
+    _startPriceUpdates();
+  }
+
+  void _startPriceUpdates() {
+    // Update prices every 30 seconds
+    _priceUpdateTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      setState(() {});
     });
   }
 
-  void _addToFavorites(Crypto crypto) {
-    setState(() {
-      _favorites.add(crypto);
-    });
+  @override
+  void dispose() {
+    _priceUpdateTimer?.cancel();
+    super.dispose();
   }
 
-  void _addToWatchlist(Crypto crypto) {
-    setState(() {
-      _watchlist.add(crypto);
-    });
-  }
-
-  void _addToPortfolio(Crypto crypto) {
-    setState(() {
-      _portfolio.add(crypto);
-    });
+  Future<void> _checkTutorial() async {
+    if (await TutorialService.shouldShowTutorial()) {
+      WidgetBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => TutorialOverlay(
+            steps: [
+              TutorialStep(
+                title: 'Welcome to CryptoTracker!',
+                description: 'Let\'s take a quick tour of the app.',
+                position: const Offset(20, 100),
+              ),
+              // Add more steps as needed
+            ],
+          ),
+        );
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cryptotos'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AccountScreen()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: IndexedStack(
-        index: _selectedIndex,
+      body: Column(
         children: [
-          CryptoListScreen(
-            onAddFavorite: _addToFavorites,
-            onAddWatchlist: _addToWatchlist,
-            onAddPortfolio: _addToPortfolio,
+          _buildTopCoins(),
+          _buildCategories(),
+          Expanded(
+            child: _buildCoinList(),
           ),
-          PortfolioScreen(portfolio: _portfolio),
-          const NewsScreen(),
-          FavoritesScreen(favorites: _favorites),
-          const RewardsScreen(),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Cryptos',
+    );
+  }
+
+  Widget _buildTopCoins() {
+    return Container(
+      height: 150,
+      padding: const EdgeInsets.all(16),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 3,
+        itemBuilder: (context, index) => _buildTopCoinCard(index),
+      ),
+    );
+  }
+
+  Widget _buildTopCoinCard(int index) {
+    return Container(
+      width: 150,
+      margin: const EdgeInsets.only(right: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: UpgradedAppTheme.surfaceColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          // Mini chart here
+          Expanded(
+            child: CryptoLineChart(
+              prices: [], // Add historical data
+              showLabels: false,
+              miniChart: true,
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            label: 'Portfolio',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.article),
-            label: 'News',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.card_giftcard),
-            label: 'Rewards',
+          // Price and details
+          Text(
+            '\$0.00',
+            style: TextStyle(
+              color: UpgradedAppTheme.textColor,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+      ),
+    );
+  }
+
+  Widget _buildCategories() {
+    return Container(
+      height: 50,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        itemBuilder: (context, index) => _buildCategoryChip(categories[index]),
+      ),
+    );
+  }
+
+  Widget _buildCategoryChip(String category) {
+    final isSelected = category == selectedCategory;
+    return GestureDetector(
+      onTap: () => setState(() => selectedCategory = category),
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? UpgradedAppTheme.accentColor : UpgradedAppTheme.surfaceColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          category,
+          style: TextStyle(
+            color: isSelected ? UpgradedAppTheme.backgroundColor : UpgradedAppTheme.textColor,
+          ),
+        ),
       ),
     );
   }
