@@ -1,3 +1,19 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:your_app_name/core/config/app_config.dart';
+import 'package:your_app_name/core/constants/app_constants.dart';
+import 'package:your_app_name/core/di/service_locator.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:your_app_name/core/utils/error_handler.dart';
+import 'package:your_app_name/data/models/user.dart';
+import 'package:your_app_name/data/repositories/user_repository.dart';
+import 'package:your_app_name/shared/widgets/custom_button.dart';
+import 'package:your_app_name/shared/widgets/custom_text_field.dart';
+
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
 
@@ -149,4 +165,4 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
     );
   }
-} 
+}

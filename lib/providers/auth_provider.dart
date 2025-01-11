@@ -43,9 +43,8 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-              email: email, password: password);
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
 
       _user = userCredential.user;
     } on FirebaseAuthException catch (e) {
@@ -119,5 +118,30 @@ class AuthProvider with ChangeNotifier {
     await _auth.signOut();
     _user = null;
     notifyListeners();
+  }
+
+  Future<void> changePassword(
+      String currentPassword, String newPassword) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw 'No user logged in';
+
+      final credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPassword,
+      );
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(newPassword);
+    } catch (e) {
+      _errorMessage = e.toString();
+      throw _errorMessage!;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

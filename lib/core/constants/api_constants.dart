@@ -27,4 +27,10 @@ class ApiDefaults {
   static const String defaultOrder = 'market_cap_desc';
   static const int defaultPerPage = 100;
   static const int defaultPage = 1;
+}
+
+class ApiConstants {
+  static const String baseUrl = 'https://api.example.com'; // Replace with your actual API base URL
+  
+  // Add other API-related constants here
 } 

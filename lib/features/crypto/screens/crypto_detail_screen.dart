@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/services/crypto_service.dart';
-import '../models/crypto_model.dart';
-import '../screens/crypto_detail_screen.dart';
-import '../screens/crypto_chart.dart';
+import 'package:your_app_name/features/crypto/widgets/crypto_line_chart.dart';
+import 'package:your_app_name/models/crypto_model.dart';
+import 'package:your_app_name/services/crypto_service.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
 
 class CryptoDetailScreen extends StatefulWidget {
   final Crypto crypto;
@@ -25,11 +25,10 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.crypto.name),
-        backgroundColor: UpgradedAppTheme.primaryColor,
+        backgroundColor: AppColors.primary,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -48,7 +47,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
           ),
         ),
       ),
-      backgroundColor: UpgradedAppTheme.backgroundColor,
+      backgroundColor: AppColors.background,
     );
   }
 
@@ -58,7 +57,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: UpgradedAppTheme.surfaceColor,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Image.network(
@@ -74,17 +73,17 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
             children: [
               Text(
                 widget.crypto.name,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: UpgradedAppTheme.textColor,
+                  color: AppColors.text,
                 ),
               ),
               Text(
                 widget.crypto.symbol.toUpperCase(),
                 style: TextStyle(
                   fontSize: 16,
-                  color: UpgradedAppTheme.textColor.withOpacity(0.7),
+                  color: AppColors.text.withAlpha(179),
                 ),
               ),
             ],
@@ -101,7 +100,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: UpgradedAppTheme.surfaceColor,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -109,10 +108,10 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
         children: [
           Text(
             '\$${widget.crypto.currentPrice.toStringAsFixed(2)}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: UpgradedAppTheme.textColor,
+              color: AppColors.text,
             ),
           ),
           const SizedBox(height: 8),
@@ -142,18 +141,18 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: UpgradedAppTheme.surfaceColor,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             '7-Day Price History',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: UpgradedAppTheme.textColor,
+              color: AppColors.text,
             ),
           ),
           const SizedBox(height: 16),
@@ -168,14 +167,14 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
                   return Center(
                     child: Text(
                       'Error: ${snapshot.error}',
-                      style: TextStyle(color: UpgradedAppTheme.textColor),
+                      style: const TextStyle(color: AppColors.text),
                     ),
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
+                  return const Center(
                     child: Text(
                       'No data available',
-                      style: TextStyle(color: UpgradedAppTheme.textColor),
+                      style: TextStyle(color: AppColors.text),
                     ),
                   );
                 } else {
@@ -193,25 +192,29 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: UpgradedAppTheme.surfaceColor,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Market Stats',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: UpgradedAppTheme.textColor,
+              color: AppColors.text,
             ),
           ),
           const SizedBox(height: 16),
-          _buildStatRow('Market Cap', '\$${widget.crypto.marketCap.toStringAsFixed(2)}'),
-          _buildStatRow('24h High', '\$${widget.crypto.high24h.toStringAsFixed(2)}'),
-          _buildStatRow('24h Low', '\$${widget.crypto.low24h.toStringAsFixed(2)}'),
-          _buildStatRow('Volume', '\$${widget.crypto.totalVolume.toStringAsFixed(2)}'),
+          _buildStatRow(
+              'Market Cap', '\$${widget.crypto.marketCap.toStringAsFixed(2)}'),
+          _buildStatRow(
+              '24h High', '\$${widget.crypto.high24h.toStringAsFixed(2)}'),
+          _buildStatRow(
+              '24h Low', '\$${widget.crypto.low24h.toStringAsFixed(2)}'),
+          _buildStatRow(
+              'Volume', '\$${widget.crypto.totalVolume.toStringAsFixed(2)}'),
         ],
       ),
     );
@@ -226,14 +229,14 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
           Text(
             label,
             style: TextStyle(
-              color: UpgradedAppTheme.textColor.withOpacity(0.7),
+              color: AppColors.text.withAlpha(179),
               fontSize: 16,
             ),
           ),
           Text(
             value,
-            style: TextStyle(
-              color: UpgradedAppTheme.textColor,
+            style: const TextStyle(
+              color: AppColors.text,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),

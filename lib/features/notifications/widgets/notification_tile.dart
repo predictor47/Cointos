@@ -1,102 +1,66 @@
+import 'package:flutter/material.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:your_app_name/features/notifications/models/notification_item.dart';
+
 class NotificationTile extends StatelessWidget {
   final NotificationItem notification;
   final VoidCallback onTap;
 
   const NotificationTile({
-    Key? key,
+    super.key,
     required this.notification,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
-      leading: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: _getNotificationColor(notification.type).withOpacity(0.1),
-          borderRadius: BorderRadius.circular(24),
-        ),
+      leading: CircleAvatar(
+        backgroundColor: notification.read ? AppColors.surface : AppColors.accent,
         child: Icon(
-          _getNotificationIcon(notification.type),
-          color: _getNotificationColor(notification.type),
+          _getNotificationIcon(),
+          color: notification.read ? AppColors.text : AppColors.background,
         ),
       ),
       title: Text(
         notification.title,
         style: TextStyle(
           color: AppColors.text,
-          fontSize: 16,
-          fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
+          fontWeight: notification.read ? FontWeight.normal : FontWeight.bold,
         ),
       ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            notification.message,
-            style: TextStyle(
-              color: AppColors.text.withOpacity(0.7),
-              fontSize: 14,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            _formatTimestamp(notification.timestamp),
-            style: TextStyle(
-              color: AppColors.text.withOpacity(0.5),
-              fontSize: 12,
-            ),
-          ),
-        ],
+      subtitle: Text(
+        notification.message,
+        style: TextStyle(
+          color: AppColors.text.withAlpha(179),
+        ),
       ),
-      trailing: notification.isRead
-          ? null
-          : Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: AppColors.accent,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
+      trailing: Text(
+        _getTimeAgo(),
+        style: TextStyle(
+          color: AppColors.text.withAlpha(179),
+          fontSize: 12,
+        ),
+      ),
     );
   }
 
-  Color _getNotificationColor(NotificationType type) {
-    switch (type) {
-      case NotificationType.priceAlert:
-        return AppColors.warning;
-      case NotificationType.news:
-        return AppColors.info;
-      case NotificationType.reward:
-        return AppColors.success;
-      case NotificationType.system:
-        return AppColors.accent;
-    }
-  }
-
-  IconData _getNotificationIcon(NotificationType type) {
-    switch (type) {
-      case NotificationType.priceAlert:
-        return Icons.trending_up;
-      case NotificationType.news:
-        return Icons.newspaper;
-      case NotificationType.reward:
+  IconData _getNotificationIcon() {
+    switch (notification.type) {
+      case 'reward':
         return Icons.stars;
-      case NotificationType.system:
+      case 'price_alert':
+        return Icons.trending_up;
+      case 'system':
+        return Icons.info;
+      default:
         return Icons.notifications;
     }
   }
 
-  String _formatTimestamp(DateTime timestamp) {
-    final now = DateTime.now();
-    final difference = now.difference(timestamp);
-
+  String _getTimeAgo() {
+    final difference = DateTime.now().difference(notification.timestamp);
     if (difference.inDays > 0) {
       return '${difference.inDays}d ago';
     } else if (difference.inHours > 0) {

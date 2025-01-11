@@ -1,5 +1,16 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:your_app_name/core/config/app_config.dart';
+import 'package:your_app_name/core/config/routes.dart';
+import 'package:your_app_name/core/di/service_locator.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:your_app_name/data/models/user.dart';
+import 'package:your_app_name/data/repositories/auth_repository.dart';
+import 'package:your_app_name/providers/rewards_provider.dart';
+import 'package:your_app_name/data/repositories/user_repository.dart';
+
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +32,7 @@ class ProfileScreen extends StatelessWidget {
         children: [
           _buildProfileHeader(user),
           const SizedBox(height: 24),
-          _buildStatsSection(rewards),
+          _buildStatsSection(context, rewards),
           const SizedBox(height: 24),
           _buildMenuSection(context),
         ],
@@ -57,14 +68,14 @@ class ProfileScreen extends StatelessWidget {
           user.email,
           style: TextStyle(
             fontSize: 16,
-            color: AppColors.text.withOpacity(0.7),
+            color: AppColors.text.withAlpha(179), // 0.7 * 255 ≈ 179
           ),
         ),
       ],
     );
   }
 
-  Widget _buildStatsSection(RewardsProvider rewards) {
+  Widget _buildStatsSection(BuildContext context, RewardsProvider rewards) {
     return Row(
       children: [
         _buildStatCard(
@@ -75,7 +86,7 @@ class ProfileScreen extends StatelessWidget {
         const SizedBox(width: 16),
         _buildStatCard(
           'Articles Read',
-          '0', // TODO: Implement article tracking
+          '${context.watch<UserRepository>().articlesReadCount}',
           Icons.article,
         ),
       ],
@@ -105,7 +116,7 @@ class ProfileScreen extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: AppColors.text.withOpacity(0.7),
+                color: AppColors.text.withAlpha(179), // 0.7 * 255 ≈ 179
               ),
             ),
           ],
@@ -193,7 +204,7 @@ class ProfileScreen extends StatelessWidget {
               getIt<AuthRepository>().signOut();
               Navigator.pop(context);
             },
-            child: Text(
+            child: const Text(
               'Logout',
               style: TextStyle(color: AppColors.error),
             ),
@@ -202,4 +213,4 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-} 
+}

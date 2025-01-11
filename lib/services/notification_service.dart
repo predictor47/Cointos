@@ -1,9 +1,16 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:your_app_name/features/notifications/models/notification_item.dart';
+
 class NotificationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  final SharedPreferences _prefs;
 
-  NotificationService(this._prefs);
+  NotificationService();
 
   Future<void> initialize() async {
     final settings = await _messaging.requestPermission(
@@ -58,7 +65,8 @@ class NotificationService {
       id: message.messageId ?? DateTime.now().toString(),
       title: message.notification?.title ?? '',
       message: message.notification?.body ?? '',
-      type: _getNotificationType(message.data['type']),
+      type:
+          _getNotificationType(message.data['type']).toString().split('.').last,
       timestamp: DateTime.now(),
       data: message.data,
     );
@@ -88,7 +96,8 @@ class NotificationService {
     }
   }
 
-  Future<List<NotificationItem>> getNotifications({bool unreadOnly = false}) async {
+  Future<List<NotificationItem>> getNotifications(
+      {bool unreadOnly = false}) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return [];
 
@@ -104,7 +113,8 @@ class NotificationService {
 
     final snapshot = await query.get();
     return snapshot.docs
-        .map((doc) => NotificationItem.fromJson(doc.data()))
+        .map((doc) =>
+            NotificationItem.fromJson(doc.data() as Map<String, dynamic>))
         .toList();
   }
 
@@ -138,4 +148,4 @@ class NotificationService {
 
     await batch.commit();
   }
-} 
+}

@@ -1,3 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:your_app_name/core/config/app_config.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+
 class PortfolioSummary extends StatelessWidget {
   final double totalValue;
   final double totalProfit;
@@ -19,7 +23,7 @@ class PortfolioSummary extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppConfig.defaultRadius),
-        border: Border.all(color: AppColors.text.withOpacity(0.1)),
+        border: Border.all(color: AppColors.text.withAlpha(26)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,7 +31,7 @@ class PortfolioSummary extends StatelessWidget {
           Text(
             'Portfolio Value',
             style: TextStyle(
-              color: AppColors.text.withOpacity(0.7),
+              color: AppColors.text.withAlpha(179),
               fontSize: 16,
             ),
           ),
@@ -62,7 +66,8 @@ class PortfolioSummary extends StatelessWidget {
     );
   }
 
-  Widget _buildProfitCard(String label, double value, bool isProfit, {bool isPercentage = false}) {
+  Widget _buildProfitCard(String label, double value, bool isProfit,
+      {bool isPercentage = false}) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -76,7 +81,7 @@ class PortfolioSummary extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: AppColors.text.withOpacity(0.7),
+                color: AppColors.text.withAlpha(179),
                 fontSize: 12,
               ),
             ),
@@ -106,4 +111,4 @@ class PortfolioSummary extends StatelessWidget {
       ),
     );
   }
-} 
+}

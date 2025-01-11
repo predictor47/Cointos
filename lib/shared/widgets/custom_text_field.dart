@@ -1,59 +1,33 @@
-class CustomTextField extends StatefulWidget {
+import 'package:flutter/material.dart';
+
+class CustomTextField extends StatelessWidget {
   final String label;
-  final String? hint;
-  final TextEditingController? controller;
-  final bool isPassword;
-  final TextInputType keyboardType;
-  final String? Function(String?)? validator;
-  final void Function(String)? onChanged;
+  final TextEditingController controller;
+  final TextInputType? keyboardType;
   final IconData? prefixIcon;
-  final bool autofocus;
+  final String? Function(String?)? validator;
+  final bool obscureText;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.label,
-    this.hint,
-    this.controller,
-    this.isPassword = false,
-    this.keyboardType = TextInputType.text,
-    this.validator,
-    this.onChanged,
+    required this.controller,
+    this.keyboardType,
     this.prefixIcon,
-    this.autofocus = false,
-  }) : super(key: key);
-
-  @override
-  State<CustomTextField> createState() => _CustomTextFieldState();
-}
-
-class _CustomTextFieldState extends State<CustomTextField> {
-  bool _obscureText = true;
+    this.validator,
+    this.obscureText = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: widget.controller,
-      obscureText: widget.isPassword && _obscureText,
-      keyboardType: widget.keyboardType,
-      validator: widget.validator,
-      onChanged: widget.onChanged,
-      autofocus: widget.autofocus,
-      style: TextStyle(color: AppColors.text),
+      controller: controller,
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      validator: validator,
       decoration: InputDecoration(
-        labelText: widget.label,
-        hintText: widget.hint,
-        prefixIcon: widget.prefixIcon != null
-            ? Icon(widget.prefixIcon, color: AppColors.text.withOpacity(0.7))
-            : null,
-        suffixIcon: widget.isPassword
-            ? IconButton(
-                icon: Icon(
-                  _obscureText ? Icons.visibility : Icons.visibility_off,
-                  color: AppColors.text.withOpacity(0.7),
-                ),
-                onPressed: () => setState(() => _obscureText = !_obscureText),
-              )
-            : null,
+        labelText: label,
+        prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
       ),
     );
   }

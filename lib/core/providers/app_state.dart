@@ -1,4 +1,6 @@
-class AppState with ChangeNotifier {
+import 'package:flutter/foundation.dart';
+
+class AppState extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   

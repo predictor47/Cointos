@@ -1,3 +1,19 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:your_app_name/core/di/service_locator.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:your_app_name/data/repositories/user_repository.dart';
+import 'package:your_app_name/features/auth/screens/login_screen.dart';
+import 'package:your_app_name/features/home/screens/home_screen.dart';
+import 'package:your_app_name/features/portfolio/screens/portfolio_screen.dart';
+import 'package:your_app_name/features/profile/screens/profile_screen.dart';
+import 'package:your_app_name/features/rewards/screens/rewards_screen.dart';
+import 'package:your_app_name/providers/portfolio_provider.dart';
+import 'package:your_app_name/providers/rewards_provider.dart';
+import 'package:your_app_name/services/analytics_service.dart';
+import 'package:your_app_name/services/notification_service.dart';
+
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -64,7 +80,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     // Listen to user authentication state
-    final user = context.watch<User?>();
+    final user = context.watch<auth.User?>();
     if (user == null) {
       return const LoginScreen();
     }
@@ -80,15 +96,15 @@ class _MainScreenState extends State<MainScreen> {
         selectedIndex: _currentIndex,
         onDestinationSelected: _onDestinationSelected,
         destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(Icons.home),
+          const NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
             label: 'Home',
             tooltip: 'View market overview',
           ),
-          NavigationDestination(
-            icon: const Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: const Icon(Icons.account_balance_wallet),
+          const NavigationDestination(
+            icon: Icon(Icons.account_balance_wallet_outlined),
+            selectedIcon: Icon(Icons.account_balance_wallet),
             label: 'Portfolio',
             tooltip: 'Manage your portfolio',
           ),
@@ -97,14 +113,16 @@ class _MainScreenState extends State<MainScreen> {
               label: Text(
                 context.watch<RewardsProvider>().availableRewards.toString(),
               ),
-              isLabelVisible: context.watch<RewardsProvider>().hasAvailableRewards,
+              isLabelVisible:
+                  context.watch<RewardsProvider>().hasAvailableRewards,
               child: const Icon(Icons.stars_outlined),
             ),
             selectedIcon: Badge(
               label: Text(
                 context.watch<RewardsProvider>().availableRewards.toString(),
               ),
-              isLabelVisible: context.watch<RewardsProvider>().hasAvailableRewards,
+              isLabelVisible:
+                  context.watch<RewardsProvider>().hasAvailableRewards,
               child: const Icon(Icons.stars),
             ),
             label: 'Rewards',
@@ -121,7 +139,7 @@ class _MainScreenState extends State<MainScreen> {
                     child: Container(
                       width: 8,
                       height: 8,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: AppColors.accent,
                         shape: BoxShape.circle,
                       ),
@@ -139,7 +157,7 @@ class _MainScreenState extends State<MainScreen> {
                     child: Container(
                       width: 8,
                       height: 8,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: AppColors.accent,
                         shape: BoxShape.circle,
                       ),
@@ -154,4 +172,4 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
-} 
+}

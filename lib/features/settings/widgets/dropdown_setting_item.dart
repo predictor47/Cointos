@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+
 class DropdownSettingItem extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -34,7 +37,7 @@ class DropdownSettingItem extends StatelessWidget {
           ? Text(
               subtitle!,
               style: TextStyle(
-                color: AppColors.text.withOpacity(0.7),
+                color: AppColors.text.withAlpha(179),
                 fontSize: 14,
               ),
             )
@@ -63,4 +66,4 @@ class DropdownSettingItem extends StatelessWidget {
       ),
     );
   }
-} 
+}

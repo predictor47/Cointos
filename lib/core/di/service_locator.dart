@@ -1,3 +1,22 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:your_app_name/data/repositories/auth_repository.dart';
+import 'package:your_app_name/data/repositories/crypto_repository.dart';
+import 'package:your_app_name/data/repositories/user_repository.dart';
+import 'package:your_app_name/providers/portfolio_provider.dart';
+import 'package:your_app_name/providers/rewards_provider.dart';
+import 'package:your_app_name/providers/settings_provider.dart';
+import 'package:your_app_name/services/analytics_service.dart';
+import 'package:your_app_name/services/notification_service.dart';
+import '../constants/api_constants.dart';
+
 final getIt = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
@@ -32,7 +51,7 @@ Future<void> setupServiceLocator() async {
 
   // Services
   getIt.registerLazySingleton<NotificationService>(
-    () => NotificationService(getIt()),
+    () => NotificationService(),
   );
   getIt.registerLazySingleton<AnalyticsService>(
     () => AnalyticsService(),
@@ -44,20 +63,20 @@ Future<void> setupServiceLocator() async {
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepository(
-      auth: getIt(),
-      firestore: getIt(),
-      analytics: getIt(),
+      firebaseAuth: getIt<FirebaseAuth>(),
+      firestore: getIt<FirebaseFirestore>(),
+      analytics: getIt<AnalyticsService>(),
     ),
   );
-  
+
   getIt.registerLazySingleton<UserRepository>(
     () => UserRepository(
-      firestore: getIt(),
-      storage: getIt(),
-      analytics: getIt(),
+      firestore: getIt<FirebaseFirestore>(),
+      storage: getIt<FirebaseStorage>(),
+      analytics: getIt<AnalyticsService>(),
     ),
   );
-  
+
   getIt.registerLazySingleton<CryptoRepository>(
     () => CryptoRepository(
       getIt<Dio>(),
@@ -68,9 +87,9 @@ Future<void> setupServiceLocator() async {
 
   // Providers
   getIt.registerFactory<SettingsProvider>(
-    () => SettingsProvider(getIt()),
+    () => SettingsProvider(),
   );
-  
+
   getIt.registerFactory<PortfolioProvider>(
     () => PortfolioProvider(
       cryptoRepository: getIt(),
@@ -78,7 +97,7 @@ Future<void> setupServiceLocator() async {
       analytics: getIt(),
     ),
   );
-  
+
   getIt.registerFactory<RewardsProvider>(
     () => RewardsProvider(
       userRepository: getIt(),
@@ -140,4 +159,4 @@ class CacheService {
   Future<void> clearCache() async {
     await _prefs.clear();
   }
-} 
+}

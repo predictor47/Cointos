@@ -1,8 +1,22 @@
-class AuthRepository {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:your_app_name/core/constants/app_constants.dart';
+import 'package:your_app_name/core/utils/error_handler.dart';
+import 'package:your_app_name/services/analytics_service.dart';
+import '../models/user.dart';
 
-  Stream<User?> get authStateChanges => _auth.authStateChanges().map((firebaseUser) {
+class AuthRepository {
+  final auth.FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firestore;
+  final AnalyticsService analytics;
+
+  AuthRepository({
+    required this.firebaseAuth,
+    required this.firestore,
+    required this.analytics,
+  });
+
+  Stream<User?> get authStateChanges => firebaseAuth.authStateChanges().map((auth.User? firebaseUser) {
         return firebaseUser == null ? null : User(
           id: firebaseUser.uid,
           email: firebaseUser.email!,
@@ -16,7 +30,7 @@ class AuthRepository {
     required String username,
   }) async {
     try {
-      final userCredential = await _auth.createUserWithEmailAndPassword(
+      final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -27,7 +41,7 @@ class AuthRepository {
         username: username,
       );
 
-      await _firestore
+      await firestore
           .collection(FirestoreCollections.users)
           .doc(user.id)
           .set(user.toJson());
@@ -45,12 +59,12 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      final userCredential = await _auth.signInWithEmailAndPassword(
+      final userCredential = await firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      final userData = await _firestore
+      final userData = await firestore
           .collection(FirestoreCollections.users)
           .doc(userCredential.user!.uid)
           .get();
@@ -62,19 +76,19 @@ class AuthRepository {
   }
 
   Future<void> signOut() async {
-    await _auth.signOut();
+    await firebaseAuth.signOut();
   }
 
   Future<void> resetPassword(String email) async {
     try {
-      await _auth.sendPasswordResetEmail(email: email);
+      await firebaseAuth.sendPasswordResetEmail(email: email);
     } catch (e) {
       throw _handleAuthError(e);
     }
   }
 
   AppError _handleAuthError(dynamic error) {
-    if (error is FirebaseAuthException) {
+    if (error is auth.FirebaseAuthException) {
       switch (error.code) {
         case 'user-not-found':
           return AppError('No user found with this email', ErrorType.authentication);

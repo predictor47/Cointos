@@ -1,3 +1,7 @@
+import 'package:dio/dio.dart';
+import 'package:your_app_name/core/utils/error_handler.dart';
+import 'error_interceptor.dart';
+
 class ApiService {
   final Dio _dio;
   final String baseUrl;
@@ -31,7 +35,12 @@ class ApiService {
         case DioExceptionType.sendTimeout:
         case DioExceptionType.receiveTimeout:
           return AppError('Connection timeout', ErrorType.network);
-        // Handle other cases
+        case DioExceptionType.badCertificate:
+        case DioExceptionType.badResponse:
+        case DioExceptionType.cancel:
+        case DioExceptionType.connectionError:
+        case DioExceptionType.unknown:
+          return AppError(error.message ?? 'Network error', ErrorType.network);
       }
     }
     return AppError('Unknown error', ErrorType.unknown);

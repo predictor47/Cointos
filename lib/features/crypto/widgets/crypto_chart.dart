@@ -24,7 +24,7 @@ class CryptoBarChart extends StatelessWidget {
                 backDrawRodData: BackgroundBarChartRodData(
                   show: true,
                   toY: prices.reduce((a, b) => a > b ? a : b),
-                  color: Colors.blue.withOpacity(0.3),
+                  color: Colors.blue.withAlpha(77),
                 ),
               ),
             ],
@@ -36,9 +36,9 @@ class CryptoBarChart extends StatelessWidget {
               showTitles: true,
               reservedSize: 40,
               interval: 1,
-              getTitlesWidget: (value, meta) {
+              getTitlesWidget: (double value, TitleMeta meta) {
                 return SideTitleWidget(
-                  axisSide: meta.axisSide,
+                  angle: 0,
                   child: Text(
                     value.toInt().toString(),
                     style: const TextStyle(color: Colors.white),
@@ -54,9 +54,9 @@ class CryptoBarChart extends StatelessWidget {
               interval: prices.isEmpty
                   ? 1
                   : (prices.reduce((a, b) => a > b ? a : b) / 5),
-              getTitlesWidget: (value, meta) {
+              getTitlesWidget: (double value, TitleMeta meta) {
                 return SideTitleWidget(
-                  axisSide: meta.axisSide,
+                  angle: 0,
                   child: Text(
                     value.toStringAsFixed(2),
                     style: const TextStyle(color: Colors.white),

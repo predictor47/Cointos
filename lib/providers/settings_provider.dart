@@ -1,36 +1,41 @@
-class SettingsProvider with ChangeNotifier {
-  final SharedPreferences _prefs;
-  
-  SettingsProvider(this._prefs);
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-  bool get isDarkMode => _prefs.getBool('darkMode') ?? true;
-  String get currency => _prefs.getString('currency') ?? 'USD';
-  bool get priceAlerts => _prefs.getBool('priceAlerts') ?? true;
-  bool get newsUpdates => _prefs.getBool('newsUpdates') ?? true;
-  bool get biometricEnabled => _prefs.getBool('biometricEnabled') ?? false;
+class SettingsProvider extends ChangeNotifier {
+  bool _isDarkMode = true;
+  String _currency = 'USD';
+  bool _priceAlerts = true;
+  bool _newsUpdates = true;
+  bool _biometricEnabled = false;
 
-  Future<void> setDarkMode(bool value) async {
-    await _prefs.setBool('darkMode', value);
+  bool get isDarkMode => _isDarkMode;
+  String get currency => _currency;
+  bool get priceAlerts => _priceAlerts;
+  bool get newsUpdates => _newsUpdates;
+  bool get biometricEnabled => _biometricEnabled;
+
+  void toggleTheme() {
+    _isDarkMode = !_isDarkMode;
     notifyListeners();
   }
 
-  Future<void> setCurrency(String value) async {
-    await _prefs.setString('currency', value);
+  void setCurrency(String value) {
+    _currency = value;
     notifyListeners();
   }
 
-  Future<void> setPriceAlerts(bool value) async {
-    await _prefs.setBool('priceAlerts', value);
+  void setPriceAlerts(bool value) {
+    _priceAlerts = value;
     notifyListeners();
   }
 
-  Future<void> setNewsUpdates(bool value) async {
-    await _prefs.setBool('newsUpdates', value);
+  void setNewsUpdates(bool value) {
+    _newsUpdates = value;
     notifyListeners();
   }
 
-  Future<void> setBiometricEnabled(bool value) async {
-    await _prefs.setBool('biometricEnabled', value);
+  void setBiometricEnabled(bool value) {
+    _biometricEnabled = value;
     notifyListeners();
   }
-} 
+}

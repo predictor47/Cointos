@@ -1,5 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:your_app_name/core/config/app_config.dart';
+import 'package:your_app_name/core/config/routes.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:your_app_name/providers/rewards_provider.dart';
+
 class RewardsScreen extends StatelessWidget {
-  const RewardsScreen({Key? key}) : super(key: key);
+  const RewardsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +44,7 @@ class RewardsScreen extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             AppColors.accent,
-            AppColors.accent.withOpacity(0.7),
+            AppColors.accent.withAlpha(179),  // 0.7 opacity
           ],
         ),
       ),
@@ -83,7 +91,7 @@ class RewardsScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.accent.withOpacity(0.1),
+                  color: AppColors.accent.withAlpha(26),  // 0.1 opacity
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -109,7 +117,7 @@ class RewardsScreen extends StatelessWidget {
                     Text(
                       'Spin the wheel to earn points',
                       style: TextStyle(
-                        color: AppColors.text.withOpacity(0.7),
+                        color: AppColors.text.withAlpha(179),  // 0.7 opacity
                         fontSize: 14,
                       ),
                     ),
@@ -152,7 +160,7 @@ class RewardsScreen extends StatelessWidget {
                 child: Text(
                   'No rewards yet',
                   style: TextStyle(
-                    color: AppColors.text.withOpacity(0.7),
+                    color: AppColors.text.withAlpha(179),  // 0.7 opacity
                   ),
                 ),
               );
@@ -175,7 +183,7 @@ class RewardsScreen extends StatelessWidget {
                   ),
                   subtitle: Text(
                     DateFormat.yMMMd().format(reward['timestamp']),
-                    style: TextStyle(color: AppColors.text.withOpacity(0.7)),
+                    style: TextStyle(color: AppColors.text.withAlpha(179)),  // 0.7 opacity
                   ),
                   trailing: Text(
                     '+${reward['points']}',

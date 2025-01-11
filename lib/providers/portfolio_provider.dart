@@ -1,11 +1,32 @@
-class PortfolioProvider with ChangeNotifier {
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:your_app_name/data/repositories/crypto_repository.dart';
+import 'package:your_app_name/data/repositories/user_repository.dart';
+import 'package:your_app_name/models/portfolio_item.dart';
+import 'package:your_app_name/services/analytics_service.dart';
+import 'package:your_app_name/services/crypto_service.dart';
+import 'package:your_app_name/services/firebase_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class PortfolioProvider extends ChangeNotifier {
+  final CryptoRepository cryptoRepository;
+  final UserRepository userRepository;
+  final AnalyticsService analytics;
   final FirebaseService _firebaseService = FirebaseService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   Map<String, PortfolioItem> _portfolio = {};
   double _totalValue = 0;
   StreamSubscription? _portfolioSubscription;
   StreamSubscription? _priceSubscription;
 
-  PortfolioProvider() {
+  PortfolioProvider({
+    required this.cryptoRepository,
+    required this.userRepository,
+    required this.analytics,
+  }) {
     _initializePortfolio();
   }
 
@@ -17,7 +38,9 @@ class PortfolioProvider with ChangeNotifier {
         notifyListeners();
       },
       onError: (error) {
-        print('Error streaming portfolio: $error');
+        if (kDebugMode) {
+          print('Error streaming portfolio: $error');
+        }
       },
     );
   }
@@ -27,11 +50,10 @@ class PortfolioProvider with ChangeNotifier {
     if (_portfolio.isEmpty) return;
 
     final coinIds = _portfolio.keys.toList();
-    _priceSubscription = CryptoService()
-        .getPriceStream(coinIds)
-        .listen((prices) {
-          _updatePortfolioValue(prices);
-        });
+    _priceSubscription =
+        CryptoService().getPriceStream(coinIds).listen((prices) {
+      _updatePortfolioValue(prices);
+    });
   }
 
   void _updatePortfolioValue(Map<String, double> prices) {
@@ -54,7 +76,8 @@ class PortfolioProvider with ChangeNotifier {
   Map<String, PortfolioItem> get portfolio => _portfolio;
   double get totalValue => _totalValue;
 
-  Future<void> addCoin(String coinId, double amount, double currentPrice) async {
+  Future<void> addCoin(
+      String coinId, double amount, double currentPrice) async {
     if (_portfolio.containsKey(coinId)) {
       throw Exception('Coin already exists in portfolio');
     }
@@ -77,4 +100,29 @@ class PortfolioProvider with ChangeNotifier {
   Future<void> removeCoin(String coinId) async {
     await _firebaseService.removePortfolioItem(coinId);
   }
-} 
+
+  Future<void> fetchPortfolio() async {
+    try {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) return;
+
+      final snapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('portfolio')
+          .get();
+
+      _portfolio = {
+        for (var doc in snapshot.docs)
+          doc.id: PortfolioItem.fromJson(doc.data())
+      };
+
+      _updatePriceStream();
+      notifyListeners();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching portfolio: $e');
+      }
+    }
+  }
+}

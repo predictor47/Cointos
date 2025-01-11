@@ -1,3 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:your_app_name/core/config/app_config.dart';
+import 'package:your_app_name/core/config/routes.dart';
+import 'package:your_app_name/core/di/service_locator.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:your_app_name/core/utils/error_handler.dart';
+import 'package:your_app_name/data/repositories/auth_repository.dart';
+import '../../../shared/widgets/custom_text_field.dart';
+import '../../../shared/widgets/custom_button.dart';
+
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
 
@@ -71,7 +81,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           Text(
             'Enter your email address and we\'ll send you instructions to reset your password.',
             style: TextStyle(
-              color: AppColors.text.withOpacity(0.7),
+              color: AppColors.text.withAlpha(179),
             ),
           ),
           const SizedBox(height: 32),
@@ -124,7 +134,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           'We\'ve sent password reset instructions to ${_emailController.text}',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: AppColors.text.withOpacity(0.7),
+            color: AppColors.text.withAlpha(179),
           ),
         ),
         const SizedBox(height: 32),

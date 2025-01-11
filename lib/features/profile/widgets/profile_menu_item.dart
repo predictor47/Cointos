@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+
 class ProfileMenuItem extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -32,18 +35,19 @@ class ProfileMenuItem extends StatelessWidget {
               fontSize: 16,
             ),
           ),
-          trailing: trailing ?? const Icon(
-            Icons.chevron_right,
-            color: AppColors.text,
-          ),
+          trailing: trailing ??
+              const Icon(
+                Icons.chevron_right,
+                color: AppColors.text,
+              ),
           onTap: onTap,
         ),
         if (showDivider)
           Divider(
-            color: AppColors.text.withOpacity(0.1),
+            color: AppColors.text.withAlpha(26),
             height: 1,
           ),
       ],
     );
   }
-} 
+}

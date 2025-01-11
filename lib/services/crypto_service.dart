@@ -1,94 +1,33 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../models/crypto_model.dart';
-import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
+import 'package:your_app_name/data/repositories/crypto_repository.dart';
+import 'package:your_app_name/models/crypto_model.dart';
+import 'package:your_app_name/data/models/chart_data.dart';
 
 class CryptoService {
-  final dio = Dio();
-  final String baseUrl = 'https://api.coingecko.com/api/v3';
+  final CryptoRepository _repository;
 
-  Future<List<Crypto>> searchCoins(String query) async {
-    try {
-      final response = await dio.get(
-        '$baseUrl/search',
-        queryParameters: {'query': query},
-      );
+  CryptoService({CryptoRepository? repository})
+      : _repository = repository ?? GetIt.I<CryptoRepository>();
 
-      if (response.statusCode == 200) {
-        final List<dynamic> coins = response.data['coins'];
-        return coins
-            .take(10) // Limit to first 10 results
-            .map((coin) => Crypto.fromJson(coin))
-            .toList();
-      }
-      throw Exception('Failed to search coins');
-    } catch (e) {
-      throw Exception('Error searching coins: $e');
-    }
+  Future<List<Crypto>> getTopCoins({int limit = 100}) async {
+    return _repository.getTopCoins(limit: limit);
   }
 
-  Future<List<double>> getPortfolioHistory(
-    Map<String, PortfolioItem> portfolio,
-    int days,
-  ) async {
-    try {
-      final List<double> totalValues = List.filled(days, 0);
-      
-      for (var item in portfolio.values) {
-        final response = await dio.get(
-          '$baseUrl/coins/${item.coinId}/market_chart',
-          queryParameters: {
-            'vs_currency': 'usd',
-            'days': days,
-            'interval': 'daily',
-          },
-        );
-
-        if (response.statusCode == 200) {
-          final List<List<dynamic>> prices = List<List<dynamic>>.from(
-            response.data['prices'],
-          );
-
-          for (int i = 0; i < days && i < prices.length; i++) {
-            totalValues[i] += (prices[i][1] as num).toDouble() * item.amount;
-          }
-        }
-      }
-
-      return totalValues;
-    } catch (e) {
-      throw Exception('Error fetching portfolio history: $e');
-    }
+  Future<List<ChartData>> getCoinChart(String coinId, String days) async {
+    return _repository.getCoinChart(coinId, days);
   }
 
-  Stream<Map<String, double>> getPriceStream(List<String> coinIds) async* {
-    while (true) {
-      try {
-        final response = await dio.get(
-          '$baseUrl/simple/price',
-          queryParameters: {
-            'ids': coinIds.join(','),
-            'vs_currencies': 'usd',
-          },
-        );
+  Future<List<double>> fetchHistoricalData(String coinId, int days) async {
+    final chartData = await getCoinChart(coinId, days.toString());
+    return chartData.map((data) => data.value).toList();
+  }
 
-        if (response.statusCode == 200) {
-          final Map<String, double> prices = {};
-          final data = response.data as Map<String, dynamic>;
-          
-          for (var coinId in coinIds) {
-            if (data.containsKey(coinId)) {
-              prices[coinId] = data[coinId]['usd'].toDouble();
-            }
-          }
-          
-          yield prices;
-        }
-      } catch (e) {
-        print('Error fetching prices: $e');
-      }
-      
-      await Future.delayed(const Duration(seconds: 30));
-    }
+  Stream<Map<String, double>> getPriceStream(List<String> coinIds) {
+    return _repository.getPriceStream(coinIds);
+  }
+
+  Future<double> getCurrentPrice(String coinId) async {
+    final coin = await _repository.getCoinDetails(coinId);
+    return coin.currentPrice;
   }
 }

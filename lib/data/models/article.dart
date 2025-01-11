@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:your_app_name/core/config/app_config.dart';
+
 class Article {
   final String id;
   final String title;

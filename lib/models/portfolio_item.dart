@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class PortfolioItem {
   final String id;
   final String coinId;
@@ -13,15 +15,29 @@ class PortfolioItem {
     required this.purchaseDate,
   });
 
-  double getCurrentValue(double currentPrice) {
-    return amount * currentPrice;
+  factory PortfolioItem.fromJson(Map<String, dynamic> json) {
+    return PortfolioItem(
+      id: json['id'] as String,
+      coinId: json['coinId'] as String,
+      amount: (json['amount'] as num).toDouble(),
+      purchasePrice: (json['purchasePrice'] as num).toDouble(),
+      purchaseDate: (json['purchaseDate'] as Timestamp).toDate(),
+    );
   }
 
-  double getProfitLoss(double currentPrice) {
-    return getCurrentValue(currentPrice) - (amount * purchasePrice);
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'coinId': coinId,
+        'amount': amount,
+        'purchasePrice': purchasePrice,
+        'purchaseDate': Timestamp.fromDate(purchaseDate),
+      };
 
-  double getProfitLossPercentage(double currentPrice) {
-    return ((currentPrice - purchasePrice) / purchasePrice) * 100;
-  }
-} 
+  double getCurrentValue(double currentPrice) => amount * currentPrice;
+
+  double getProfitLoss(double currentPrice) =>
+      getCurrentValue(currentPrice) - (amount * purchasePrice);
+
+  double getProfitLossPercentage(double currentPrice) =>
+      ((currentPrice - purchasePrice) / purchasePrice) * 100;
+}

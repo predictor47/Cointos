@@ -1,5 +1,20 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:your_app_name/core/config/app_config.dart';
+import 'package:your_app_name/core/config/routes.dart';
+import 'package:your_app_name/core/di/service_locator.dart';
+import 'package:your_app_name/core/utils/error_handler.dart';
+import 'package:your_app_name/services/crypto_service.dart';
+import '../widgets/category_filter.dart';
+import '../widgets/top_coins_slider.dart';
+import '../widgets/coin_list_tile.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:your_app_name/models/crypto_model.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();

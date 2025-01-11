@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 enum NotificationType {
   priceAlert,
   news,
@@ -9,18 +11,18 @@ class NotificationItem {
   final String id;
   final String title;
   final String message;
-  final NotificationType type;
+  final String type;
   final DateTime timestamp;
-  final bool isRead;
+  final bool read;
   final Map<String, dynamic>? data;
 
-  const NotificationItem({
+  NotificationItem({
     required this.id,
     required this.title,
     required this.message,
     required this.type,
     required this.timestamp,
-    this.isRead = false,
+    this.read = false,
     this.data,
   });
 
@@ -29,11 +31,9 @@ class NotificationItem {
       id: json['id'] as String,
       title: json['title'] as String,
       message: json['message'] as String,
-      type: NotificationType.values.firstWhere(
-        (type) => type.toString() == json['type'],
-      ),
+      type: json['type'] as String,
       timestamp: (json['timestamp'] as Timestamp).toDate(),
-      isRead: json['isRead'] as bool? ?? false,
+      read: json['read'] as bool? ?? false,
       data: json['data'] as Map<String, dynamic>?,
     );
   }
@@ -43,9 +43,9 @@ class NotificationItem {
       'id': id,
       'title': title,
       'message': message,
-      'type': type.toString(),
+      'type': type,
       'timestamp': Timestamp.fromDate(timestamp),
-      'isRead': isRead,
+      'read': read,
       'data': data,
     };
   }
@@ -53,9 +53,9 @@ class NotificationItem {
   NotificationItem copyWith({
     String? title,
     String? message,
-    NotificationType? type,
+    String? type,
     DateTime? timestamp,
-    bool? isRead,
+    bool? read,
     Map<String, dynamic>? data,
   }) {
     return NotificationItem(
@@ -64,7 +64,7 @@ class NotificationItem {
       message: message ?? this.message,
       type: type ?? this.type,
       timestamp: timestamp ?? this.timestamp,
-      isRead: isRead ?? this.isRead,
+      read: read ?? this.read,
       data: data ?? this.data,
     );
   }

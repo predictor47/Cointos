@@ -138,4 +138,16 @@ class FirebaseService {
 
     return doc.exists;
   }
-} 
+
+  DocumentReference getUserDocument() {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) throw Exception('No authenticated user');
+    return _firestore.collection('users').doc(userId);
+  }
+
+  Future<void> updateUserData(Map<String, dynamic> data) async {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) throw Exception('No authenticated user');
+    await _firestore.collection('users').doc(userId).update(data);
+  }
+}

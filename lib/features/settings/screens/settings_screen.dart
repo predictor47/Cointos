@@ -1,3 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:your_app_name/core/config/app_config.dart';
+import 'package:your_app_name/core/config/routes.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:your_app_name/features/profile/widgets/profile_menu_item.dart';
+import 'package:your_app_name/features/settings/widgets/dropdown_setting_item.dart';
+import 'package:your_app_name/features/settings/widgets/switch_setting_item.dart';
+import 'package:provider/provider.dart';
+import 'package:your_app_name/providers/settings_provider.dart';
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
@@ -17,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.dark_mode,
                 value: Theme.of(context).brightness == Brightness.dark,
                 onChanged: (value) {
-                  // TODO: Implement theme switching
+                  context.read<SettingsProvider>().toggleTheme();
                 },
               ),
               DropdownSettingItem(
@@ -26,7 +36,9 @@ class SettingsScreen extends StatelessWidget {
                 value: 'USD',
                 items: const ['USD', 'EUR', 'GBP', 'JPY'],
                 onChanged: (value) {
-                  // TODO: Implement currency switching
+                  if (value != null) {
+                    context.read<SettingsProvider>().setCurrency(value);
+                  }
                 },
               ),
             ],
@@ -37,18 +49,16 @@ class SettingsScreen extends StatelessWidget {
               SwitchSettingItem(
                 title: 'Price Alerts',
                 icon: Icons.notifications,
-                value: true,
-                onChanged: (value) {
-                  // TODO: Implement notification settings
-                },
+                value: context.watch<SettingsProvider>().priceAlerts,
+                onChanged: (value) =>
+                    context.read<SettingsProvider>().setPriceAlerts(value),
               ),
               SwitchSettingItem(
                 title: 'News Updates',
                 icon: Icons.newspaper,
-                value: true,
-                onChanged: (value) {
-                  // TODO: Implement news notification settings
-                },
+                value: context.watch<SettingsProvider>().newsUpdates,
+                onChanged: (value) =>
+                    context.read<SettingsProvider>().setNewsUpdates(value),
               ),
             ],
           ),
@@ -66,10 +76,9 @@ class SettingsScreen extends StatelessWidget {
               SwitchSettingItem(
                 title: 'Biometric Authentication',
                 icon: Icons.fingerprint,
-                value: false,
-                onChanged: (value) {
-                  // TODO: Implement biometric auth
-                },
+                value: context.watch<SettingsProvider>().biometricEnabled,
+                onChanged: (value) =>
+                    context.read<SettingsProvider>().setBiometricEnabled(value),
               ),
             ],
           ),
@@ -96,7 +105,7 @@ class SettingsScreen extends StatelessWidget {
                 trailing: Text(
                   AppConfig.appVersion,
                   style: TextStyle(
-                    color: AppColors.text.withOpacity(0.7),
+                    color: AppColors.text.withAlpha(179),
                   ),
                 ),
                 onTap: () {},
@@ -128,4 +137,4 @@ class SettingsScreen extends StatelessWidget {
       ],
     );
   }
-} 
+}

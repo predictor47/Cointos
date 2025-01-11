@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+
 class CategoryFilter extends StatelessWidget {
   final List<String> categories;
   final String selectedCategory;
@@ -30,7 +33,7 @@ class CategoryFilter extends StatelessWidget {
                 color: isSelected ? AppColors.accent : AppColors.surface,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected ? AppColors.accent : AppColors.text.withOpacity(0.1),
+                  color: isSelected ? AppColors.accent : AppColors.text.withAlpha(26),
                 ),
               ),
               child: Center(

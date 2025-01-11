@@ -1,18 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/services/tutorial_service.dart';
-
-class TutorialStep {
-  final String title;
-  final String description;
-  final Offset position;
-
-  const TutorialStep({
-    required this.title,
-    required this.description,
-    required this.position,
-  });
-}
+import '../../../core/theme/app_theme.dart';
+import '../../../services/tutorial_service.dart';
 
 class TutorialOverlay extends StatefulWidget {
   final List<TutorialStep> steps;
@@ -23,6 +11,18 @@ class TutorialOverlay extends StatefulWidget {
   State<TutorialOverlay> createState() => _TutorialOverlayState();
 }
 
+class TutorialStep {
+  final String title;
+  final String description;
+  final Offset position;
+
+  TutorialStep({
+    required this.title,
+    required this.description,
+    required this.position,
+  });
+}
+
 class _TutorialOverlayState extends State<TutorialOverlay> {
   int currentStep = 0;
 
@@ -30,10 +30,7 @@ class _TutorialOverlayState extends State<TutorialOverlay> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Semi-transparent background
         Container(color: Colors.black54),
-
-        // Tutorial content
         AnimatedPositioned(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
@@ -43,35 +40,20 @@ class _TutorialOverlayState extends State<TutorialOverlay> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.accent.withAlpha(77),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   widget.steps[currentStep].title,
                   style: const TextStyle(
-                    color: AppColors.text,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  widget.steps[currentStep].description,
-                  style: const TextStyle(
-                    color: AppColors.text,
-                    fontSize: 14,
-                  ),
-                ),
+                Text(widget.steps[currentStep].description),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -89,7 +71,6 @@ class _TutorialOverlayState extends State<TutorialOverlay> {
                         currentStep < widget.steps.length - 1
                             ? 'Next'
                             : 'Finish',
-                        style: const TextStyle(color: AppColors.accent),
                       ),
                     ),
                   ],
@@ -102,3 +83,5 @@ class _TutorialOverlayState extends State<TutorialOverlay> {
     );
   }
 }
+
+// ... rest of the implementation

@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class User {
+  static final defaultTime = DateTime.utc(1970);
+
   final String id;
   final String email;
   final String username;
@@ -13,9 +17,9 @@ class User {
     required this.username,
     this.totalPoints = 0,
     this.dailySpins = 0,
-    this.lastSpinTime = const DateTime(0),
+    DateTime? lastSpinTime,
     this.profileImage = '',
-  });
+  }) : lastSpinTime = lastSpinTime ?? defaultTime;
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(

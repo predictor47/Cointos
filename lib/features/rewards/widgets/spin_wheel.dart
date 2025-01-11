@@ -1,10 +1,20 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:your_app_name/shared/widgets/custom_button.dart';
+import '../models/spin_wheel_item.dart';
+
 class SpinWheel extends StatefulWidget {
   final List<SpinWheelItem> items;
-  final Function(SpinWheelItem) onSpinEnd;
+  final Function(int) onSpinComplete;
+  final VoidCallback onSpinEnd;
 
   const SpinWheel({
     Key? key,
     required this.items,
+    required this.onSpinComplete,
     required this.onSpinEnd,
   }) : super(key: key);
 
@@ -12,10 +22,12 @@ class SpinWheel extends StatefulWidget {
   State<SpinWheel> createState() => _SpinWheelState();
 }
 
-class _SpinWheelState extends State<SpinWheel> with SingleTickerProviderStateMixin {
+class _SpinWheelState extends State<SpinWheel>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  final StreamController<int> _selectedIndexController = StreamController<int>();
+  final StreamController<int> _selectedIndexController =
+      StreamController<int>();
   bool _isSpinning = false;
 
   @override
@@ -30,7 +42,8 @@ class _SpinWheelState extends State<SpinWheel> with SingleTickerProviderStateMix
       if (status == AnimationStatus.completed) {
         _isSpinning = false;
         final selectedIndex = _calculateSelectedIndex(_animation.value);
-        widget.onSpinEnd(widget.items[selectedIndex]);
+        widget.onSpinComplete(widget.items[selectedIndex].value);
+        widget.onSpinEnd();
       }
     });
   }
@@ -144,9 +157,8 @@ class WheelPainter extends CustomPainter {
     for (var i = 0; i < items.length; i++) {
       final startAngle = i * itemAngle;
       final paint = Paint()
-        ..color = i == selectedIndex
-            ? items[i].color.withOpacity(0.8)
-            : items[i].color;
+        ..color =
+            i == selectedIndex ? items[i].color.withAlpha(204) : items[i].color;
 
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
@@ -159,7 +171,7 @@ class WheelPainter extends CustomPainter {
       // Draw text
       final textPainter = TextPainter(
         text: TextSpan(
-          text: '${items[i].points}',
+          text: items[i].label,
           style: const TextStyle(
             color: AppColors.text,
             fontSize: 20,
@@ -188,13 +200,3 @@ class WheelPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
-
-class SpinWheelItem {
-  final int points;
-  final Color color;
-
-  const SpinWheelItem({
-    required this.points,
-    required this.color,
-  });
-} 

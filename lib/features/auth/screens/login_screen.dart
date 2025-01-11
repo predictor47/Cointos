@@ -1,3 +1,14 @@
+import 'package:flutter/material.dart';
+import 'package:your_app_name/core/config/app_config.dart';
+import 'package:your_app_name/core/config/routes.dart';
+import 'package:your_app_name/core/constants/app_constants.dart';
+import 'package:your_app_name/core/di/service_locator.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:your_app_name/core/utils/error_handler.dart';
+import 'package:your_app_name/data/repositories/auth_repository.dart';
+import 'package:your_app_name/shared/widgets/custom_button.dart';
+import 'package:your_app_name/shared/widgets/custom_text_field.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -84,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 CustomTextField(
                   label: 'Password',
                   controller: _passwordController,
-                  isPassword: true,
+                  obscureText: true,
                   prefixIcon: Icons.lock,
                   validator: (value) {
                     if (value?.isEmpty ?? true) {
@@ -108,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     context,
                     AppRoutes.forgotPassword,
                   ),
-                  child: Text(
+                  child: const Text(
                     'Forgot Password?',
                     style: TextStyle(color: AppColors.accent),
                   ),
@@ -117,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       'Don\'t have an account? ',
                       style: TextStyle(color: AppColors.text),
                     ),
@@ -126,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         context,
                         AppRoutes.register,
                       ),
-                      child: Text(
+                      child: const Text(
                         'Sign Up',
                         style: TextStyle(color: AppColors.accent),
                       ),

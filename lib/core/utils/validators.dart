@@ -76,7 +76,8 @@ class Validators {
     if (value == null || value.isEmpty) {
       return null; // URLs can be optional
     }
-    if (!Uri.tryParse(value)?.hasAbsolutePath ?? false) {
+    final uri = Uri.tryParse(value);
+    if (uri == null || !uri.hasAbsolutePath) {
       return 'Please enter a valid URL';
     }
     return null;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:crypto_tracker/core/constants/validation_rules.dart';
-import 'package:crypto_tracker/core/widgets/custom_text_field.dart';
+import 'package:your_app_name/core/constants/app_constants.dart';
+import 'package:your_app_name/shared/widgets/custom_text_field.dart';
 
 class AuthForm extends StatelessWidget {
   final TextEditingController emailController;
@@ -54,7 +54,7 @@ class AuthForm extends StatelessWidget {
         CustomTextField(
           label: 'Password',
           controller: passwordController,
-          isPassword: true,
+          obscureText: true,
           prefixIcon: Icons.lock,
           validator: (value) {
             if (value?.isEmpty ?? true) {

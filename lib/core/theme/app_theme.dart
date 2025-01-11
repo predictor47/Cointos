@@ -1,3 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../config/app_config.dart'; // For AppConfig
+
 class AppTheme {
   static ThemeData get darkTheme {
     return ThemeData.dark().copyWith(
@@ -36,18 +40,18 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConfig.defaultRadius),
-          borderSide: BorderSide(color: AppColors.text.withOpacity(0.1)),
+          borderSide: BorderSide(color: AppColors.text.withAlpha(26)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConfig.defaultRadius),
-          borderSide: BorderSide(color: AppColors.accent),
+          borderSide: const BorderSide(color: AppColors.accent),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConfig.defaultRadius),
-          borderSide: BorderSide(color: AppColors.error),
+          borderSide: const BorderSide(color: AppColors.error),
         ),
-        labelStyle: TextStyle(color: AppColors.text.withOpacity(0.7)),
-        hintStyle: TextStyle(color: AppColors.text.withOpacity(0.5)),
+        labelStyle: TextStyle(color: AppColors.text.withAlpha(179)),
+        hintStyle: TextStyle(color: AppColors.text.withAlpha(128)),
       ),
       buttonTheme: ButtonThemeData(
         shape: RoundedRectangleBorder(
@@ -67,14 +71,14 @@ class AppColors {
   static const Color surface = Color(0xFF1E1E1E);
   static const Color error = Color(0xFFCF6679);
   static const Color text = Color(0xFFFFFFFF);
-  
+
   static const Color success = Color(0xFF4CAF50);
   static const Color warning = Color(0xFFFFC107);
   static const Color info = Color(0xFF2196F3);
-  
+
   static const Color chartLine = Color(0xFF03DAC6);
   static const Color chartFill = Color(0x1A03DAC6);
-  
+
   static const Color positive = Color(0xFF4CAF50);
   static const Color negative = Color(0xFFCF6679);
-} 
+}

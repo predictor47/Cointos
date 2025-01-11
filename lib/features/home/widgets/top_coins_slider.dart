@@ -1,3 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:your_app_name/core/config/app_config.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:your_app_name/models/crypto_model.dart';
+import 'package:shimmer/shimmer.dart';
+
 class TopCoinsSlider extends StatelessWidget {
   final List<Crypto> coins;
   final bool isLoading;
@@ -49,7 +55,7 @@ class _TopCoinCard extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppConfig.defaultRadius),
         border: Border.all(
-          color: AppColors.text.withOpacity(0.1),
+          color: AppColors.text.withAlpha(26),
         ),
       ),
       child: Column(
@@ -120,7 +126,7 @@ class _TopCoinShimmer extends StatelessWidget {
       ),
       child: Shimmer.fromColors(
         baseColor: AppColors.surface,
-        highlightColor: AppColors.text.withOpacity(0.1),
+        highlightColor: AppColors.text.withAlpha(26),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

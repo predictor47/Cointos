@@ -1,3 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:your_app_name/core/config/app_config.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:your_app_name/models/crypto_model.dart';
+import 'package:your_app_name/models/portfolio_item.dart';
+
 class PortfolioCoinCard extends StatelessWidget {
   final PortfolioItem item;
   final Crypto coin;
@@ -18,7 +24,8 @@ class PortfolioCoinCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentValue = item.getCurrentValue(coin.currentPrice);
     final profitLoss = item.getProfitLoss(coin.currentPrice);
-    final profitLossPercentage = item.getProfitLossPercentage(coin.currentPrice);
+    final profitLossPercentage =
+        item.getProfitLossPercentage(coin.currentPrice);
     final isProfit = profitLoss >= 0;
 
     return Card(
@@ -56,7 +63,7 @@ class PortfolioCoinCard extends StatelessWidget {
                         Text(
                           '${item.amount} ${coin.symbol.toUpperCase()}',
                           style: TextStyle(
-                            color: AppColors.text.withOpacity(0.7),
+                            color: AppColors.text.withAlpha(179),
                             fontSize: 14,
                           ),
                         ),
@@ -66,7 +73,7 @@ class PortfolioCoinCard extends StatelessWidget {
                   PopupMenuButton<String>(
                     icon: Icon(
                       Icons.more_vert,
-                      color: AppColors.text.withOpacity(0.7),
+                      color: AppColors.text.withAlpha(179),
                     ),
                     onSelected: (value) {
                       if (value == 'edit') {
@@ -98,7 +105,7 @@ class PortfolioCoinCard extends StatelessWidget {
                       Text(
                         'Current Value',
                         style: TextStyle(
-                          color: AppColors.text.withOpacity(0.7),
+                          color: AppColors.text.withAlpha(179),
                           fontSize: 12,
                         ),
                       ),
@@ -119,7 +126,7 @@ class PortfolioCoinCard extends StatelessWidget {
                       Text(
                         'Profit/Loss',
                         style: TextStyle(
-                          color: AppColors.text.withOpacity(0.7),
+                          color: AppColors.text.withAlpha(179),
                           fontSize: 12,
                         ),
                       ),
@@ -127,15 +134,20 @@ class PortfolioCoinCard extends StatelessWidget {
                       Row(
                         children: [
                           Icon(
-                            isProfit ? Icons.arrow_upward : Icons.arrow_downward,
-                            color: isProfit ? AppColors.success : AppColors.error,
+                            isProfit
+                                ? Icons.arrow_upward
+                                : Icons.arrow_downward,
+                            color:
+                                isProfit ? AppColors.success : AppColors.error,
                             size: 16,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '${profitLossPercentage.abs().toStringAsFixed(2)}%',
                             style: TextStyle(
-                              color: isProfit ? AppColors.success : AppColors.error,
+                              color: isProfit
+                                  ? AppColors.success
+                                  : AppColors.error,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -152,4 +164,4 @@ class PortfolioCoinCard extends StatelessWidget {
       ),
     );
   }
-} 
+}

@@ -1,3 +1,17 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:your_app_name/core/constants/api_constants.dart';
+import 'package:your_app_name/core/utils/error_handler.dart';
+import 'package:your_app_name/models/crypto_model.dart';
+import '../models/price_alert.dart';
+import '../../core/exceptions/auth_exceptions.dart';
+import '../models/chart_data.dart';
+
 class CryptoRepository {
   final Dio _dio;
   final SharedPreferences _prefs;
@@ -125,7 +139,8 @@ class CryptoRepository {
         'cached_coins',
         jsonEncode(coins.map((coin) => coin.toJson()).toList()),
       );
-      await _prefs.setInt('cache_timestamp', DateTime.now().millisecondsSinceEpoch);
+      await _prefs.setInt(
+          'cache_timestamp', DateTime.now().millisecondsSinceEpoch);
     } catch (e) {
       // Handle cache error silently
       debugPrint('Error caching coin data: $e');
@@ -136,7 +151,7 @@ class CryptoRepository {
     try {
       final cachedData = _prefs.getString('cached_coins');
       final cacheTimestamp = _prefs.getInt('cache_timestamp');
-      
+
       if (cachedData == null || cacheTimestamp == null) return null;
 
       // Check if cache is older than 5 minutes
@@ -150,4 +165,14 @@ class CryptoRepository {
       return null;
     }
   }
-} 
+
+  Stream<Map<String, double>> getPriceStream(List<String> coinIds) {
+    return Stream.periodic(const Duration(seconds: 10)).asyncMap((_) async {
+      final coins = await getTopCoins(limit: 100);
+      return {
+        for (var coin in coins.where((c) => coinIds.contains(c.id)))
+          coin.id: coin.currentPrice
+      };
+    });
+  }
+}
