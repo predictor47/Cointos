@@ -15,7 +15,7 @@ import 'package:your_app_name/services/analytics_service.dart';
 import 'package:your_app_name/services/notification_service.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();

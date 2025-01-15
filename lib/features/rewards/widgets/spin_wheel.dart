@@ -12,11 +12,11 @@ class SpinWheel extends StatefulWidget {
   final VoidCallback onSpinEnd;
 
   const SpinWheel({
-    Key? key,
+    super.key,
     required this.items,
     required this.onSpinComplete,
     required this.onSpinEnd,
-  }) : super(key: key);
+  });
 
   @override
   State<SpinWheel> createState() => _SpinWheelState();

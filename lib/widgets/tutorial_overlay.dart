@@ -17,7 +17,7 @@ class TutorialStep {
 class TutorialOverlay extends StatefulWidget {
   final List<TutorialStep> steps;
 
-  const TutorialOverlay({Key? key, required this.steps}) : super(key: key);
+  const TutorialOverlay({super.key, required this.steps});
 
   @override
   State<TutorialOverlay> createState() => _TutorialOverlayState();

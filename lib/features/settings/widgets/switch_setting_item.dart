@@ -9,13 +9,13 @@ class SwitchSettingItem extends StatelessWidget {
   final String? subtitle;
 
   const SwitchSettingItem({
-    Key? key,
+    super.key,
     required this.title,
     required this.icon,
     required this.value,
     required this.onChanged,
     this.subtitle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

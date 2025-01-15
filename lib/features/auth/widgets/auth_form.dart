@@ -8,11 +8,11 @@ class AuthForm extends StatelessWidget {
   final TextEditingController? usernameController;
 
   const AuthForm({
-    Key? key,
+    super.key,
     required this.emailController,
     required this.passwordController,
     this.usernameController,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

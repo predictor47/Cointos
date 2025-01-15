@@ -12,13 +12,13 @@ class PortfolioCoinCard extends StatelessWidget {
   final VoidCallback onDelete;
 
   const PortfolioCoinCard({
-    Key? key,
+    super.key,
     required this.item,
     required this.coin,
     required this.onTap,
     required this.onEdit,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

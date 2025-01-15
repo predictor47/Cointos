@@ -15,7 +15,7 @@ import 'package:your_app_name/shared/widgets/custom_button.dart';
 import 'package:your_app_name/shared/widgets/custom_text_field.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({Key? key}) : super(key: key);
+  const EditProfileScreen({super.key});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();

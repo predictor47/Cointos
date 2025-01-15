@@ -9,10 +9,10 @@ class TopCoinsSlider extends StatelessWidget {
   final bool isLoading;
 
   const TopCoinsSlider({
-    Key? key,
+    super.key,
     required this.coins,
     this.isLoading = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
 
 class NotificationsScreen extends StatelessWidget {
-  const NotificationsScreen({Key? key}) : super(key: key);
+  const NotificationsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

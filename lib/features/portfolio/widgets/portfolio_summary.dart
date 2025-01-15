@@ -8,11 +8,11 @@ class PortfolioSummary extends StatelessWidget {
   final double profitPercentage;
 
   const PortfolioSummary({
-    Key? key,
+    super.key,
     required this.totalValue,
     required this.totalProfit,
     required this.profitPercentage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
