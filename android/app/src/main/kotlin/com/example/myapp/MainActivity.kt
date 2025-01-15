@@ -1,4 +1,4 @@
-package com.cointos.app
+package com.example.myapp
 
 import io.flutter.embedding.android.FlutterActivity
 
