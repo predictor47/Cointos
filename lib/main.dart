@@ -5,9 +5,11 @@ import 'package:your_app_name/core/di/service_locator.dart';
 import 'package:your_app_name/core/theme/app_theme.dart';
 import 'package:your_app_name/features/splash/screens/splash_screen.dart';
 import 'package:your_app_name/providers/settings_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   await setupServiceLocator();
 
   runApp(const MyApp());
