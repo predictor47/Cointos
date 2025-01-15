@@ -13,7 +13,6 @@ import 'package:your_app_name/providers/portfolio_provider.dart';
 import 'package:your_app_name/providers/rewards_provider.dart';
 import 'package:your_app_name/services/analytics_service.dart';
 import 'package:your_app_name/services/notification_service.dart';
-import 'package:your_app_name/features/market/screens/market_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

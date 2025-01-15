@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         // Other providers...
       ],
       child: MaterialApp(
-        title: 'Your App Name',
+        title: 'Kointos',
         theme: AppTheme.darkTheme,
         home: const SplashScreen(),
         routes: AppRoutes.routes,
