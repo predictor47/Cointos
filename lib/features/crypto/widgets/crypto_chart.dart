@@ -14,8 +14,7 @@ class CryptoBarChart extends StatelessWidget {
         barGroups: prices.asMap().entries.map((e) {
           return BarChartGroupData(
             x: e.key,
-            barsSpace:
-                4, // This is how you can set the space between bars (though may not exist in latest versions)
+            barsSpace: 4,
             barRods: [
               BarChartRodData(
                 toY: e.value,
@@ -31,14 +30,14 @@ class CryptoBarChart extends StatelessWidget {
           );
         }).toList(),
         titlesData: FlTitlesData(
+          show: true,
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 40,
-              interval: 1,
               getTitlesWidget: (double value, TitleMeta meta) {
                 return SideTitleWidget(
-                  angle: 0,
+                  space: 40,
+                  meta: meta,
                   child: Text(
                     value.toInt().toString(),
                     style: const TextStyle(color: Colors.white),
@@ -50,19 +49,19 @@ class CryptoBarChart extends StatelessWidget {
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 40,
-              interval: prices.isEmpty
-                  ? 1
-                  : (prices.reduce((a, b) => a > b ? a : b) / 5),
               getTitlesWidget: (double value, TitleMeta meta) {
                 return SideTitleWidget(
-                  angle: 0,
+                  space: 40,
+                  meta: meta,
                   child: Text(
                     value.toStringAsFixed(2),
                     style: const TextStyle(color: Colors.white),
                   ),
                 );
               },
+              interval: prices.isEmpty
+                  ? 1
+                  : (prices.reduce((a, b) => a > b ? a : b) / 5),
             ),
           ),
         ),
@@ -87,8 +86,7 @@ class CryptoBarChart extends StatelessWidget {
             if (barTouchResponse != null && barTouchResponse.spot != null) {
               final touchedSpot = barTouchResponse.spot!;
               final xValue = touchedSpot.touchedBarGroup.x;
-              final yValue = touchedSpot
-                  .touchedRodData.toY; // Accessing via touchedRodData
+              final yValue = touchedSpot.touchedRodData.toY;
               if (kDebugMode) {
                 print('Touched spot: x=$xValue, y=$yValue');
               }
