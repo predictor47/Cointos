@@ -13,6 +13,7 @@ import 'package:your_app_name/providers/portfolio_provider.dart';
 import 'package:your_app_name/providers/rewards_provider.dart';
 import 'package:your_app_name/services/analytics_service.dart';
 import 'package:your_app_name/services/notification_service.dart';
+import 'package:your_app_name/features/market/screens/market_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -22,8 +23,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
-  final PageController _pageController = PageController();
+  int _currentIndex = 2;
+  final PageController _pageController = PageController(initialPage: 2);
 
   final List<Widget> _screens = const [
     HomeScreen(),
@@ -89,85 +90,20 @@ class _MainScreenState extends State<MainScreen> {
       body: PageView(
         controller: _pageController,
         onPageChanged: _onPageChanged,
-        physics: const NeverScrollableScrollPhysics(), // Disable swipe
+        physics: const NeverScrollableScrollPhysics(),
         children: _screens,
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: _onDestinationSelected,
-        destinations: [
-          const NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
-            tooltip: 'View market overview',
-          ),
-          const NavigationDestination(
-            icon: Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: Icon(Icons.account_balance_wallet),
-            label: 'Portfolio',
-            tooltip: 'Manage your portfolio',
-          ),
+        backgroundColor: AppColors.surface,
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
           NavigationDestination(
-            icon: Badge(
-              label: Text(
-                context.watch<RewardsProvider>().availableRewards.toString(),
-              ),
-              isLabelVisible:
-                  context.watch<RewardsProvider>().hasAvailableRewards,
-              child: const Icon(Icons.stars_outlined),
-            ),
-            selectedIcon: Badge(
-              label: Text(
-                context.watch<RewardsProvider>().availableRewards.toString(),
-              ),
-              isLabelVisible:
-                  context.watch<RewardsProvider>().hasAvailableRewards,
-              child: const Icon(Icons.stars),
-            ),
-            label: 'Rewards',
-            tooltip: 'View available rewards',
-          ),
-          NavigationDestination(
-            icon: Stack(
-              children: [
-                const Icon(Icons.person_outline),
-                if (context.watch<UserRepository>().hasUnreadNotifications)
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: AppColors.accent,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            selectedIcon: Stack(
-              children: [
-                const Icon(Icons.person),
-                if (context.watch<UserRepository>().hasUnreadNotifications)
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: AppColors.accent,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            label: 'Profile',
-            tooltip: 'View profile settings',
-          ),
+              icon: Icon(Icons.account_balance_wallet), label: 'Portfolio'),
+          NavigationDestination(icon: Icon(Icons.stars), label: 'Rewards'),
+          NavigationDestination(icon: Icon(Icons.show_chart), label: 'Market'),
+          NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );

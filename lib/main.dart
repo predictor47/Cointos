@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:your_app_name/core/config/routes.dart';
+import 'package:your_app_name/core/di/service_locator.dart';
+import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:your_app_name/features/splash/screens/splash_screen.dart';
+import 'package:your_app_name/providers/settings_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await setupServiceLocator();
+
   runApp(const MyApp());
 }
 
@@ -13,28 +18,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Your App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: const Center(
-        child: Text('Hello World'),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => getIt<SettingsProvider>()),
+        // Other providers...
+      ],
+      child: MaterialApp(
+        title: 'Your App Name',
+        theme: AppTheme.darkTheme,
+        home: const SplashScreen(),
+        routes: AppRoutes.routes,
       ),
     );
   }
