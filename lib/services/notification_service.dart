@@ -14,20 +14,26 @@ class NotificationService {
   NotificationService();
 
   Future<void> initialize() async {
-    final settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    try {
+      final settings = await _messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      final token = await _messaging.getToken();
-      if (token != null) {
-        await _saveToken(token);
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        final token = await _messaging.getToken();
+        if (token != null) {
+          await _saveToken(token);
+        }
+
+        FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+        FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
       }
-
-      FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-      FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error initializing notification service: $e');
+      }
     }
   }
 
@@ -48,13 +54,19 @@ class NotificationService {
   }
 
   void _handleForegroundMessage(RemoteMessage message) {
-    // Handle foreground message
+    if (kDebugMode) {
+      print(
+          'Received a message in the foreground: ${message.notification?.title}');
+    }
     _saveNotification(message);
     _showLocalNotification(message);
   }
 
   void _handleBackgroundMessage(RemoteMessage message) {
-    // Handle background message
+    if (kDebugMode) {
+      print(
+          'Received a message in the background: ${message.notification?.title}');
+    }
     _saveNotification(message);
   }
 
@@ -159,6 +171,14 @@ class NotificationService {
       if (kDebugMode) {
         print('Error marking all notifications as read: $e');
       }
+    }
+  }
+
+  // ignore: unused_element
+  static Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
+    if (kDebugMode) {
+      print('Handling a background message: ${message.messageId}');
     }
   }
 }
