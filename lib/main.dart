@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:your_app_name/core/config/routes.dart';
-import 'package:your_app_name/core/di/service_locator.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/features/splash/screens/splash_screen.dart';
-import 'package:your_app_name/providers/settings_provider.dart';
+import 'core/config/routes.dart';
+import 'core/di/service_locator.dart';
+import 'core/theme/app_theme.dart';
+import 'features/splash/screens/splash_screen.dart';
+import 'providers/settings_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {

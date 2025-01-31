@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:your_app_name/features/auth/screens/forgot_password_screen.dart';
-import 'package:your_app_name/features/auth/screens/login_screen.dart';
-import 'package:your_app_name/features/auth/screens/register_screen.dart';
-import 'package:your_app_name/features/home/screens/home_screen.dart';
-import 'package:your_app_name/features/portfolio/screens/portfolio_screen.dart';
-import 'package:your_app_name/features/rewards/screens/spin_wheel_screen.dart';
-import 'package:your_app_name/features/auth/screens/change_password_screen.dart';
-import 'package:your_app_name/features/splash/screens/splash_screen.dart';
-import 'package:your_app_name/features/main/screens/main_screen.dart';
+import '../features/auth/screens/forgot_password_screen.dart';
+import '../features/auth/screens/login_screen.dart';
+import '../features/auth/screens/register_screen.dart';
+import '../features/home/screens/home_screen.dart';
+import '../features/portfolio/screens/portfolio_screen.dart';
+import '../features/rewards/screens/spin_wheel_screen.dart';
+import '../features/auth/screens/change_password_screen.dart';
+import '../features/splash/screens/splash_screen.dart';
+import '../features/main/screens/main_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';

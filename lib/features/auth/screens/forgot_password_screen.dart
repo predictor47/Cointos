@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:your_app_name/core/config/app_config.dart';
-import 'package:your_app_name/core/config/routes.dart';
-import 'package:your_app_name/core/di/service_locator.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/core/utils/error_handler.dart';
-import 'package:your_app_name/data/repositories/auth_repository.dart';
-import '../../../shared/widgets/custom_text_field.dart';
-import '../../../shared/widgets/custom_button.dart';
+import '../core/config/app_config.dart';
+import '../core/config/routes.dart';
+import '../core/di/service_locator.dart';
+import '../core/theme/app_theme.dart';
+import '../core/utils/error_handler.dart';
+import '../data/repositories/auth_repository.dart';
+import '../../shared/widgets/custom_text_field.dart';
+import '../../shared/widgets/custom_button.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -36,6 +36,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       await authRepo.resetPassword(_emailController.text.trim());
       if (mounted) {
         setState(() => _emailSent = true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Reset link sent to your email')),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -148,4 +151,4 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ],
     );
   }
-} 
+}

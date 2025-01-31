@@ -19,11 +19,20 @@ class NotificationsScreen extends StatelessWidget {
           TextButton(
             onPressed: () async {
               final userRepo = context.read<UserRepository>();
-              await userRepo.markAllNotificationsAsRead();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('All notifications marked as read')),
-                );
+              try {
+                await userRepo.markAllNotificationsAsRead();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('All notifications marked as read')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error marking notifications: $e')),
+                  );
+                }
               }
             },
             child: const Text(
@@ -66,15 +75,8 @@ class NotificationsScreen extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
-        }
-
-        if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              'Error loading notifications',
-              style: TextStyle(color: AppColors.text.withAlpha(179)),
-            ),
-          );
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
         }
 
         final notifications = snapshot.data ?? [];
@@ -110,9 +112,10 @@ class NotificationsScreen extends StatelessWidget {
               onTap: () async {
                 final userRepo = context.read<UserRepository>();
                 await userRepo.markNotificationAsRead(notification.id);
-                
+
                 // Handle navigation based on notification type
-                if (notification.type == 'price_alert' && notification.data?['coinId'] != null) {
+                if (notification.type == 'price_alert' &&
+                    notification.data?['coinId'] != null) {
                   Navigator.pushNamed(
                     context,
                     AppRoutes.cryptoDetail,
@@ -133,4 +136,4 @@ class NotificationsScreen extends StatelessWidget {
     final userRepo = GetIt.I<UserRepository>();
     return userRepo.getNotifications(unreadOnly: unreadOnly);
   }
-} 
+}

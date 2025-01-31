@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:your_app_name/features/notifications/models/notification_item.dart';
+import '../features/notifications/models/notification_item.dart';
 
 class NotificationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -61,22 +61,25 @@ class NotificationService {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return;
 
-    final notification = NotificationItem(
-      id: message.messageId ?? DateTime.now().toString(),
-      title: message.notification?.title ?? '',
-      message: message.notification?.body ?? '',
-      type:
-          _getNotificationType(message.data['type']).toString().split('.').last,
-      timestamp: DateTime.now(),
-      data: message.data,
-    );
+    try {
+      final notification = NotificationItem(
+        id: message.messageId ?? '',
+        title: message.notification?.title ?? '',
+        message: message.notification?.body ?? '',
+        type: _getNotificationType(message.data['type']),
+        timestamp: DateTime.now(),
+        read: false,
+      );
 
-    await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('notifications')
-        .doc(notification.id)
-        .set(notification.toJson());
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .add(notification.toJson());
+    } catch (e) {
+      // Log the error or handle it accordingly
+      print('Error saving notification: $e');
+    }
   }
 
   Future<void> _showLocalNotification(RemoteMessage message) async {
@@ -101,51 +104,65 @@ class NotificationService {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return [];
 
-    Query query = _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('notifications')
-        .orderBy('timestamp', descending: true);
+    try {
+      Query query = _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .orderBy('timestamp', descending: true);
 
-    if (unreadOnly) {
-      query = query.where('isRead', isEqualTo: false);
+      if (unreadOnly) {
+        query = query.where('isRead', isEqualTo: false);
+      }
+
+      final snapshot = await query.get();
+      return snapshot.docs
+          .map((doc) =>
+              NotificationItem.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      // Log the error or handle it accordingly
+      print('Error fetching notifications: $e');
+      return [];
     }
-
-    final snapshot = await query.get();
-    return snapshot.docs
-        .map((doc) =>
-            NotificationItem.fromJson(doc.data() as Map<String, dynamic>))
-        .toList();
   }
 
   Future<void> markAsRead(String notificationId) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return;
 
-    await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('notifications')
-        .doc(notificationId)
-        .update({'isRead': true});
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .doc(notificationId)
+          .update({'isRead': true});
+    } catch (e) {
+      print('Error marking notification as read: $e');
+    }
   }
 
   Future<void> markAllAsRead() async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return;
 
-    final batch = _firestore.batch();
-    final notifications = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('notifications')
-        .where('isRead', isEqualTo: false)
-        .get();
+    try {
+      final batch = _firestore.batch();
+      final notifications = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .where('isRead', isEqualTo: false)
+          .get();
 
-    for (var doc in notifications.docs) {
-      batch.update(doc.reference, {'isRead': true});
+      for (var doc in notifications.docs) {
+        batch.update(doc.reference, {'isRead': true});
+      }
+
+      await batch.commit();
+    } catch (e) {
+      print('Error marking all notifications as read: $e');
     }
-
-    await batch.commit();
   }
 }

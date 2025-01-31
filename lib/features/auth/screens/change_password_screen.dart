@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/providers/auth_provider.dart';
-import 'package:your_app_name/shared/widgets/custom_button.dart';
-import 'package:your_app_name/shared/widgets/custom_text_field.dart';
+import '../core/theme/app_theme.dart';
+import '../providers/auth_provider.dart';
+import '../../shared/widgets/custom_button.dart';
+import '../../shared/widgets/custom_text_field.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -110,4 +110,4 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     _confirmPasswordController.dispose();
     super.dispose();
   }
-} 
+}

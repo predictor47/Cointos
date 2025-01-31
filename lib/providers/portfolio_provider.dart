@@ -112,6 +112,13 @@ class PortfolioProvider extends ChangeNotifier {
           .collection('portfolio')
           .get();
 
+      if (snapshot.docs.isEmpty) {
+        // Handle case where no portfolio items exist
+        _portfolio = {};
+        notifyListeners();
+        return;
+      }
+
       _portfolio = {
         for (var doc in snapshot.docs)
           doc.id: PortfolioItem.fromJson(doc.data())

@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:your_app_name/core/config/app_config.dart';
-import 'package:your_app_name/core/config/routes.dart';
-import 'package:your_app_name/core/di/service_locator.dart';
-import 'package:your_app_name/core/utils/error_handler.dart';
-import 'package:your_app_name/services/crypto_service.dart';
+import '../core/config/app_config.dart';
+import '../core/config/routes.dart';
+import '../core/di/service_locator.dart';
+import '../core/utils/error_handler.dart';
+import '../services/crypto_service.dart';
 import '../widgets/category_filter.dart';
 import '../widgets/top_coins_slider.dart';
 import '../widgets/coin_list_tile.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:your_app_name/models/crypto_model.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
+import '../models/crypto_model.dart';
+import '../core/theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -84,7 +84,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.notifications),
-            onPressed: () => Navigator.pushNamed(context, AppRoutes.notifications),
+            onPressed: () =>
+                Navigator.pushNamed(context, AppRoutes.notifications),
           ),
         ],
       ),
@@ -108,7 +109,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 24),
                     CategoryFilter(
-                      categories: const ['All', 'DeFi', 'NFT', 'Layer 1', 'Layer 2'],
+                      categories: const [
+                        'All',
+                        'DeFi',
+                        'NFT',
+                        'Layer 1',
+                        'Layer 2'
+                      ],
                       selectedCategory: _selectedCategory,
                       onCategorySelected: (category) {
                         setState(() => _selectedCategory = category);
@@ -118,9 +125,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       'All Coins',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: AppColors.text,
-                        fontWeight: FontWeight.bold,
-                      ),
+                            color: AppColors.text,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ],
                 ),
@@ -152,4 +159,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-} 
+}

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:your_app_name/core/config/app_config.dart';
-import 'package:your_app_name/core/config/routes.dart';
-import 'package:your_app_name/core/di/service_locator.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/data/models/user.dart';
-import 'package:your_app_name/data/repositories/auth_repository.dart';
-import 'package:your_app_name/providers/rewards_provider.dart';
-import 'package:your_app_name/data/repositories/user_repository.dart';
+import '../core/config/app_config.dart';
+import '../core/config/routes.dart';
+import '../core/di/service_locator.dart';
+import '../core/theme/app_theme.dart';
+import '../data/models/user.dart';
+import '../data/repositories/auth_repository.dart';
+import '../providers/rewards_provider.dart';
+import '../data/repositories/user_repository.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -27,15 +27,26 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(AppConfig.defaultPadding),
-        children: [
-          _buildProfileHeader(user),
-          const SizedBox(height: 24),
-          _buildStatsSection(context, rewards),
-          const SizedBox(height: 24),
-          _buildMenuSection(context),
-        ],
+      body: FutureBuilder(
+        future: context.read<UserRepository>().fetchUserData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          return ListView(
+            padding: const EdgeInsets.all(AppConfig.defaultPadding),
+            children: [
+              _buildProfileHeader(user),
+              const SizedBox(height: 24),
+              _buildStatsSection(context, rewards),
+              const SizedBox(height: 24),
+              _buildMenuSection(context),
+            ],
+          );
+        },
       ),
     );
   }

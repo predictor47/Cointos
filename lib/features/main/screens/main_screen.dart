@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:your_app_name/core/di/service_locator.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/data/repositories/user_repository.dart';
-import 'package:your_app_name/features/auth/screens/login_screen.dart';
-import 'package:your_app_name/features/home/screens/home_screen.dart';
-import 'package:your_app_name/features/portfolio/screens/portfolio_screen.dart';
-import 'package:your_app_name/features/profile/screens/profile_screen.dart';
-import 'package:your_app_name/features/rewards/screens/rewards_screen.dart';
-import 'package:your_app_name/providers/portfolio_provider.dart';
-import 'package:your_app_name/providers/rewards_provider.dart';
-import 'package:your_app_name/services/analytics_service.dart';
-import 'package:your_app_name/services/notification_service.dart';
+import '../core/di/service_locator.dart';
+import '../core/theme/app_theme.dart';
+import '../data/repositories/user_repository.dart';
+import '../features/auth/screens/login_screen.dart';
+import '../features/home/screens/home_screen.dart';
+import '../features/portfolio/screens/portfolio_screen.dart';
+import '../features/profile/screens/profile_screen.dart';
+import '../features/rewards/screens/rewards_screen.dart';
+import '../providers/portfolio_provider.dart';
+import '../providers/rewards_provider.dart';
+import '../services/analytics_service.dart';
+import '../services/notification_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

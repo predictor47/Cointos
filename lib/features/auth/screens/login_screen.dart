@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:your_app_name/core/config/app_config.dart';
-import 'package:your_app_name/core/config/routes.dart';
-import 'package:your_app_name/core/constants/app_constants.dart';
-import 'package:your_app_name/core/di/service_locator.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/core/utils/error_handler.dart';
-import 'package:your_app_name/data/repositories/auth_repository.dart';
-import 'package:your_app_name/shared/widgets/custom_button.dart';
-import 'package:your_app_name/shared/widgets/custom_text_field.dart';
+import '../core/config/app_config.dart';
+import '../core/config/routes.dart';
+import '../core/constants/app_constants.dart';
+import '../core/di/service_locator.dart';
+import '../core/theme/app_theme.dart';
+import '../core/utils/error_handler.dart';
+import '../data/repositories/auth_repository.dart';
+import '../../shared/widgets/custom_button.dart';
+import '../../shared/widgets/custom_text_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -39,8 +40,20 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, AppRoutes.main);
+
+      // Check if the user is authenticated
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, AppRoutes.main);
+        }
+      } else {
+        // Handle the case where the user is not authenticated
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Authentication failed')),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
