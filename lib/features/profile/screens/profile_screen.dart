@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../core/config/app_config.dart';
-import '../core/config/routes.dart';
-import '../core/di/service_locator.dart';
-import '../core/theme/app_theme.dart';
-import '../data/models/user.dart';
-import '../data/repositories/auth_repository.dart';
-import '../providers/rewards_provider.dart';
-import '../data/repositories/user_repository.dart';
+import '/../core/config/app_config.dart';
+import '/../core/config/routes.dart';
+import '/../core/di/service_locator.dart';
+import '/../core/theme/app_theme.dart';
+import '/../data/models/user.dart';
+import '/../data/repositories/auth_repository.dart';
+import '/../providers/rewards_provider.dart';
+import '/../data/repositories/user_repository.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});

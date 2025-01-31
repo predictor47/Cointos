@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/providers/portfolio_provider.dart';
-import 'package:your_app_name/services/crypto_service.dart';
-import 'package:your_app_name/widgets/coin_selector.dart';
+import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/providers/portfolio_provider.dart';
+import 'package:kointos/services/crypto_service.dart';
+import 'package:kointos/widgets/coin_selector.dart';
 
 class AddCoinForm extends StatefulWidget {
   const AddCoinForm({super.key});

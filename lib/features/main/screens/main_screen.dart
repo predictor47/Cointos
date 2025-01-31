@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import '../core/di/service_locator.dart';
-import '../core/theme/app_theme.dart';
-import '../data/repositories/user_repository.dart';
-import '../features/auth/screens/login_screen.dart';
-import '../features/home/screens/home_screen.dart';
-import '../features/portfolio/screens/portfolio_screen.dart';
-import '../features/profile/screens/profile_screen.dart';
-import '../features/rewards/screens/rewards_screen.dart';
-import '../providers/portfolio_provider.dart';
-import '../providers/rewards_provider.dart';
-import '../services/analytics_service.dart';
-import '../services/notification_service.dart';
+import '/core/di/service_locator.dart';
+import '/core/theme/app_theme.dart';
+import '/data/repositories/user_repository.dart';
+import '/features/auth/screens/login_screen.dart';
+import '/features/home/screens/home_screen.dart';
+import '/features/portfolio/screens/portfolio_screen.dart';
+import '/features/profile/screens/profile_screen.dart';
+import '/features/rewards/screens/rewards_screen.dart';
+import '/providers/portfolio_provider.dart';
+import '/providers/rewards_provider.dart';
+import '/services/analytics_service.dart';
+import '/services/notification_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

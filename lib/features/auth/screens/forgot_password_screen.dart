@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '../core/config/app_config.dart';
-import '../core/config/routes.dart';
-import '../core/di/service_locator.dart';
-import '../core/theme/app_theme.dart';
-import '../core/utils/error_handler.dart';
-import '../data/repositories/auth_repository.dart';
-import '../../shared/widgets/custom_text_field.dart';
-import '../../shared/widgets/custom_button.dart';
+import '/core/config/app_config.dart';
+import '/core/config/routes.dart';
+import '/core/di/service_locator.dart';
+import '/core/theme/app_theme.dart';
+import '/core/utils/error_handler.dart';
+import '/data/repositories/auth_repository.dart';
+import '/shared/widgets/custom_text_field.dart';
+import '/shared/widgets/custom_button.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});

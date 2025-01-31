@@ -1,7 +1,7 @@
 import 'package:get_it/get_it.dart';
-import 'package:your_app_name/data/repositories/crypto_repository.dart';
-import 'package:your_app_name/models/crypto_model.dart';
-import 'package:your_app_name/data/models/chart_data.dart';
+import 'package:kointos/data/repositories/crypto_repository.dart';
+import 'package:kointos/models/crypto_model.dart';
+import 'package:kointos/data/models/chart_data.dart';
 
 class CryptoService {
   final CryptoRepository _repository;

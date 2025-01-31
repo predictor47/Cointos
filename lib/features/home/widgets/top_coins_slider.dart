@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:your_app_name/core/config/app_config.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/models/crypto_model.dart';
+import 'package:kointos/core/config/app_config.dart';
+import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/models/crypto_model.dart';
 import 'package:shimmer/shimmer.dart';
 
 class TopCoinsSlider extends StatelessWidget {
@@ -161,4 +161,4 @@ class _TopCoinShimmer extends StatelessWidget {
       ),
     );
   }
-} 
+}

@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:your_app_name/core/constants/app_constants.dart';
-import 'package:your_app_name/core/utils/error_handler.dart';
-import 'package:your_app_name/services/analytics_service.dart';
+import 'package:kointos/core/constants/app_constants.dart';
+import 'package:kointos/core/utils/error_handler.dart';
+import 'package:kointos/services/analytics_service.dart';
 import '../models/user.dart';
 
 class AuthRepository {
@@ -16,12 +16,15 @@ class AuthRepository {
     required this.analytics,
   });
 
-  Stream<User?> get authStateChanges => firebaseAuth.authStateChanges().map((auth.User? firebaseUser) {
-        return firebaseUser == null ? null : User(
-          id: firebaseUser.uid,
-          email: firebaseUser.email!,
-          username: firebaseUser.displayName ?? '',
-        );
+  Stream<User?> get authStateChanges =>
+      firebaseAuth.authStateChanges().map((auth.User? firebaseUser) {
+        return firebaseUser == null
+            ? null
+            : User(
+                id: firebaseUser.uid,
+                email: firebaseUser.email!,
+                username: firebaseUser.displayName ?? '',
+              );
       });
 
   Future<User> signUp({
@@ -91,15 +94,18 @@ class AuthRepository {
     if (error is auth.FirebaseAuthException) {
       switch (error.code) {
         case 'user-not-found':
-          return AppError('No user found with this email', ErrorType.authentication);
+          return AppError(
+              'No user found with this email', ErrorType.authentication);
         case 'wrong-password':
           return AppError('Invalid password', ErrorType.authentication);
         case 'email-already-in-use':
-          return AppError('Email is already registered', ErrorType.authentication);
+          return AppError(
+              'Email is already registered', ErrorType.authentication);
         default:
-          return AppError(error.message ?? ErrorMessages.authError, ErrorType.authentication);
+          return AppError(error.message ?? ErrorMessages.authError,
+              ErrorType.authentication);
       }
     }
     return AppError(ErrorMessages.unknownError, ErrorType.unknown);
   }
-} 
+}

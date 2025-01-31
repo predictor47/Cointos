@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:your_app_name/data/repositories/crypto_repository.dart';
-import 'package:your_app_name/data/repositories/user_repository.dart';
-import 'package:your_app_name/models/portfolio_item.dart';
-import 'package:your_app_name/services/analytics_service.dart';
-import 'package:your_app_name/services/crypto_service.dart';
-import 'package:your_app_name/services/firebase_service.dart';
+import 'package:kointos/data/repositories/crypto_repository.dart';
+import 'package:kointos/data/repositories/user_repository.dart';
+import 'package:kointos/models/portfolio_item.dart';
+import 'package:kointos/services/analytics_service.dart';
+import 'package:kointos/services/crypto_service.dart';
+import 'package:kointos/services/firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PortfolioProvider extends ChangeNotifier {

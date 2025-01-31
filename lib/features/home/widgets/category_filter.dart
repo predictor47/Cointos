@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/app_theme.dart';
 
 class CategoryFilter extends StatelessWidget {
   final List<String> categories;
@@ -23,7 +23,7 @@ class CategoryFilter extends StatelessWidget {
         itemBuilder: (context, index) {
           final category = categories[index];
           final isSelected = category == selectedCategory;
-          
+
           return GestureDetector(
             onTap: () => onCategorySelected(category),
             child: Container(
@@ -33,7 +33,9 @@ class CategoryFilter extends StatelessWidget {
                 color: isSelected ? AppColors.accent : AppColors.surface,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected ? AppColors.accent : AppColors.text.withAlpha(26),
+                  color: isSelected
+                      ? AppColors.accent
+                      : AppColors.text.withAlpha(26),
                 ),
               ),
               child: Center(
@@ -41,7 +43,8 @@ class CategoryFilter extends StatelessWidget {
                   category,
                   style: TextStyle(
                     color: isSelected ? AppColors.background : AppColors.text,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
               ),
@@ -51,4 +54,4 @@ class CategoryFilter extends StatelessWidget {
       ),
     );
   }
-} 
+}

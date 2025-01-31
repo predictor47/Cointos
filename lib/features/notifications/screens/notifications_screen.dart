@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:your_app_name/core/config/routes.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/features/notifications/models/notification_item.dart';
-import 'package:your_app_name/features/notifications/widgets/notification_tile.dart';
-import 'package:your_app_name/data/repositories/user_repository.dart';
+import 'package:kointos/core/config/routes.dart';
+import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/features/notifications/models/notification_item.dart';
+import 'package:kointos/features/notifications/widgets/notification_tile.dart';
+import 'package:kointos/data/repositories/user_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
 

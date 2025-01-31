@@ -4,12 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/foundation.dart';
-import 'package:your_app_name/core/config/app_config.dart';
-import 'package:your_app_name/core/constants/app_constants.dart';
-import 'package:your_app_name/core/utils/error_handler.dart';
-import 'package:your_app_name/data/models/user.dart';
-import 'package:your_app_name/features/notifications/models/notification_item.dart';
-import 'package:your_app_name/services/analytics_service.dart';
+import 'package:kointos/core/config/app_config.dart';
+import 'package:kointos/core/constants/app_constants.dart';
+import 'package:kointos/core/utils/error_handler.dart';
+import 'package:kointos/data/models/user.dart';
+import 'package:kointos/features/notifications/models/notification_item.dart';
+import 'package:kointos/services/analytics_service.dart';
 
 class UserRepository extends ChangeNotifier {
   final FirebaseFirestore firestore;
@@ -193,6 +193,19 @@ class UserRepository extends ChangeNotifier {
         .get();
     _articlesReadCount = snapshot.docs.length;
     notifyListeners();
+  }
+
+  Future<User> fetchUserData() async {
+    final userId = auth.FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) throw Exception('User not authenticated');
+
+    final doc = await firestore
+        .collection(FirestoreCollections.users)
+        .doc(userId)
+        .get();
+    if (!doc.exists) throw Exception('User not found');
+
+    return User.fromJson(doc.data()!);
   }
 
   AppError _handleError(dynamic error) {

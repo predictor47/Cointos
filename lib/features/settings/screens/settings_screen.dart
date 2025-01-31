@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:your_app_name/core/config/app_config.dart';
-import 'package:your_app_name/core/config/routes.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/features/profile/widgets/profile_menu_item.dart';
-import 'package:your_app_name/features/settings/widgets/dropdown_setting_item.dart';
-import 'package:your_app_name/features/settings/widgets/switch_setting_item.dart';
+import 'package:kointos/core/config/app_config.dart';
+import 'package:kointos/core/config/routes.dart';
+import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/features/profile/widgets/profile_menu_item.dart';
+import 'package:kointos/features/settings/widgets/dropdown_setting_item.dart';
+import 'package:kointos/features/settings/widgets/switch_setting_item.dart';
 import 'package:provider/provider.dart';
-import 'package:your_app_name/providers/settings_provider.dart';
+import 'package:kointos/providers/settings_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

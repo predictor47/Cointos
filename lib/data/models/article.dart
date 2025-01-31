@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:your_app_name/core/config/app_config.dart';
+import 'package:kointos/core/config/app_config.dart';
 
 class Article {
   final String id;
@@ -51,4 +51,4 @@ class Article {
       'rewardPoints': rewardPoints,
     };
   }
-} 
+}

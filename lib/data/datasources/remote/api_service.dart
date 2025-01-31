@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:your_app_name/core/utils/error_handler.dart';
+import 'package:kointos/core/utils/error_handler.dart';
 import 'error_interceptor.dart';
 
 class ApiService {
@@ -45,4 +45,4 @@ class ApiService {
     }
     return AppError('Unknown error', ErrorType.unknown);
   }
-} 
+}

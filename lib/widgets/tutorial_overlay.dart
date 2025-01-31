@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/services/tutorial_service.dart';
+import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/services/tutorial_service.dart';
 
 class TutorialStep {
   final String title;

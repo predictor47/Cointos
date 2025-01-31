@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../features/notifications/models/notification_item.dart';
 
@@ -66,7 +67,7 @@ class NotificationService {
         id: message.messageId ?? '',
         title: message.notification?.title ?? '',
         message: message.notification?.body ?? '',
-        type: _getNotificationType(message.data['type']),
+        type: message.data['type'] as String,
         timestamp: DateTime.now(),
         read: false,
       );
@@ -78,25 +79,14 @@ class NotificationService {
           .add(notification.toJson());
     } catch (e) {
       // Log the error or handle it accordingly
-      print('Error saving notification: $e');
+      if (kDebugMode) {
+        print('Error saving notification: $e');
+      }
     }
   }
 
   Future<void> _showLocalNotification(RemoteMessage message) async {
     // Implement local notification display
-  }
-
-  NotificationType _getNotificationType(String? type) {
-    switch (type) {
-      case 'price_alert':
-        return NotificationType.priceAlert;
-      case 'news':
-        return NotificationType.news;
-      case 'reward':
-        return NotificationType.reward;
-      default:
-        return NotificationType.system;
-    }
   }
 
   Future<List<NotificationItem>> getNotifications(
@@ -122,7 +112,9 @@ class NotificationService {
           .toList();
     } catch (e) {
       // Log the error or handle it accordingly
-      print('Error fetching notifications: $e');
+      if (kDebugMode) {
+        print('Error fetching notifications: $e');
+      }
       return [];
     }
   }
@@ -139,7 +131,9 @@ class NotificationService {
           .doc(notificationId)
           .update({'isRead': true});
     } catch (e) {
-      print('Error marking notification as read: $e');
+      if (kDebugMode) {
+        print('Error marking notification as read: $e');
+      }
     }
   }
 
@@ -162,7 +156,9 @@ class NotificationService {
 
       await batch.commit();
     } catch (e) {
-      print('Error marking all notifications as read: $e');
+      if (kDebugMode) {
+        print('Error marking all notifications as read: $e');
+      }
     }
   }
 }

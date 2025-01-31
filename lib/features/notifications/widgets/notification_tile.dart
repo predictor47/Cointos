@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:your_app_name/core/theme/app_theme.dart';
-import 'package:your_app_name/features/notifications/models/notification_item.dart';
+import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/features/notifications/models/notification_item.dart';
 
 class NotificationTile extends StatelessWidget {
   final NotificationItem notification;
@@ -17,7 +17,8 @@ class NotificationTile extends StatelessWidget {
     return ListTile(
       onTap: onTap,
       leading: CircleAvatar(
-        backgroundColor: notification.read ? AppColors.surface : AppColors.accent,
+        backgroundColor:
+            notification.read ? AppColors.surface : AppColors.accent,
         child: Icon(
           _getNotificationIcon(),
           color: notification.read ? AppColors.text : AppColors.background,
@@ -71,4 +72,4 @@ class NotificationTile extends StatelessWidget {
       return 'Just now';
     }
   }
-} 
+}
