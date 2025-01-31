@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:513615609284:android:4cf45a2f86af7ff684b891",
+        "mobilesdk_app_id": "1:513615609284:android:ebeb567519d146ce84b891",
         "android_client_info": {
-          "package_name": "com.cointos.app"
+          "package_name": "com.example.myapp"
         }
       },
       "oauth_client": [

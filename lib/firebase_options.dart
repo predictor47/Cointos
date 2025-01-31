@@ -23,10 +23,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -50,20 +47,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBt59j79rP222NOe9Qph4JjFnfrtUY1Rrk',
-    appId: '1:513615609284:web:3b69c1538310d03984b891',
+    apiKey: 'AIzaSyDkLhv_IAfdS29p5lFVduZUGZHoXtSiyeE',
+    appId: '1:513615609284:web:c0584c57379f22b284b891',
     messagingSenderId: '513615609284',
     projectId: 'coinverse-f947a',
     authDomain: 'coinverse-f947a.firebaseapp.com',
-    storageBucket: 'coinverse-f947a.appspot.com',
-    measurementId: 'G-BNZ2V9T676',
+    storageBucket: 'coinverse-f947a.firebasestorage.app',
+    measurementId: 'G-PNEZ76J7SF',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAUH_hAL469gIuvrgKSy8gR-vYDekIH3Yc',
-    appId: '1:513615609284:android:4cf45a2f86af7ff684b891',
+    appId: '1:513615609284:android:ebeb567519d146ce84b891',
     messagingSenderId: '513615609284',
     projectId: 'coinverse-f947a',
-    storageBucket: 'coinverse-f947a.appspot.com',
+    storageBucket: 'coinverse-f947a.firebasestorage.app',
   );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyCtxXGL9TL6XuXo_c9KDE7SnTDd1DuI4EA',
+    appId: '1:513615609284:ios:1fb6e2b05641442484b891',
+    messagingSenderId: '513615609284',
+    projectId: 'coinverse-f947a',
+    storageBucket: 'coinverse-f947a.firebasestorage.app',
+    iosBundleId: 'none',
+  );
+
 }
