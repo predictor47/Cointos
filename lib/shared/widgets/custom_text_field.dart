@@ -7,6 +7,8 @@ class CustomTextField extends StatelessWidget {
   final IconData? prefixIcon;
   final String? Function(String?)? validator;
   final bool obscureText;
+  final FocusNode? focusNode;
+  final Function(String)? onFieldSubmitted;
 
   const CustomTextField({
     super.key,
@@ -16,6 +18,8 @@ class CustomTextField extends StatelessWidget {
     this.prefixIcon,
     this.validator,
     this.obscureText = false,
+    this.focusNode,
+    this.onFieldSubmitted,
   });
 
   @override
@@ -29,6 +33,8 @@ class CustomTextField extends StatelessWidget {
         labelText: label,
         prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
       ),
+      focusNode: focusNode,
+      onFieldSubmitted: onFieldSubmitted,
     );
   }
-} 
+}

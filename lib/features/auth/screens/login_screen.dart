@@ -9,6 +9,7 @@ import '/data/repositories/auth_repository.dart';
 import '/shared/widgets/custom_button.dart';
 import '/shared/widgets/custom_text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kointos/providers/user_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,49 +22,77 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  // Create FocusNodes
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+
   bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
   Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
 
-    setState(() => _isLoading = true);
-    try {
-      final authRepo = getIt<AuthRepository>();
-      await authRepo.signIn(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
+      try {
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
 
-      // Check if the user is authenticated
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        if (mounted) {
+        final user = userCredential.user;
+
+        if (user != null) {
           Navigator.pushReplacementNamed(context, AppRoutes.main);
-        }
-      } else {
-        // Handle the case where the user is not authenticated
-        if (mounted) {
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Authentication failed')),
           );
         }
-      }
-    } catch (e) {
-      if (mounted) {
+      } on FirebaseAuthException catch (e) {
+        String errorMessage;
+
+        switch (e.code) {
+          case 'user-not-found':
+            errorMessage = 'No user found for that email.';
+            break;
+          case 'wrong-password':
+            errorMessage = 'Wrong password provided for that user.';
+            break;
+          case 'invalid-email':
+            errorMessage = 'The email address is not valid.';
+            break;
+          case 'user-disabled':
+            errorMessage = 'User has been disabled.';
+            break;
+          default:
+            errorMessage = 'An unknown error occurred. Please try again.';
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(ErrorHandler.getMessage(e))),
+          SnackBar(content: Text(errorMessage)),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An error occurred: ${e.toString()}')),
+        );
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }
@@ -92,6 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 CustomTextField(
                   label: 'Email',
                   controller: _emailController,
+                  focusNode: _emailFocusNode,
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icons.email,
                   validator: (value) {
@@ -103,11 +133,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                     return null;
                   },
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(_passwordFocusNode);
+                  },
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(
                   label: 'Password',
                   controller: _passwordController,
+                  focusNode: _passwordFocusNode,
                   obscureText: true,
                   prefixIcon: Icons.lock,
                   validator: (value) {
@@ -118,6 +152,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       return 'Password must be at least ${ValidationRules.passwordMinLength} characters';
                     }
                     return null;
+                  },
+                  onFieldSubmitted: (_) {
+                    _login(); // Call login when Enter is pressed
                   },
                 ),
                 const SizedBox(height: 24),

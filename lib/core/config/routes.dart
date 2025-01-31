@@ -10,7 +10,6 @@ import '/features/splash/screens/splash_screen.dart';
 import '/features/main/screens/main_screen.dart';
 
 class AppRoutes {
-  static const String splash = '/';
   static const String login = '/login';
   static const String main = '/main';
   static const String forgotPassword = '/forgot-password';
@@ -28,7 +27,6 @@ class AppRoutes {
   static const String changePassword = '/change-password';
 
   static Map<String, WidgetBuilder> get routes => {
-        splash: (context) => const SplashScreen(),
         login: (context) => const LoginScreen(),
         main: (context) => const MainScreen(),
         forgotPassword: (context) => const ForgotPasswordScreen(),
