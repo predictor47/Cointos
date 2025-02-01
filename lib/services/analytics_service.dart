@@ -1,7 +1,11 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 
 class AnalyticsService {
-  final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
+  late final FirebaseAnalytics _analytics;
+
+  void initialize(FirebaseAnalytics analytics) {
+    _analytics = analytics;
+  }
 
   Future<void> logEvent({
     required String name,
