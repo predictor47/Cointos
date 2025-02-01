@@ -199,10 +199,7 @@ class UserRepository extends ChangeNotifier {
     final userId = auth.FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) throw Exception('User not authenticated');
 
-    final doc = await firestore
-        .collection(FirestoreCollections.users)
-        .doc(userId)
-        .get();
+    final doc = await firestore.collection('users').doc(userId).get();
     if (!doc.exists) throw Exception('User not found');
 
     return User.fromJson(doc.data()!);

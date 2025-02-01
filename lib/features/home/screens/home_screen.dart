@@ -26,44 +26,25 @@ class _HomeScreenState extends State<HomeScreen> {
   String _selectedCategory = 'All';
   List<Crypto> _coins = [];
   bool _isLoading = true;
-  Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
-    _loadData();
-    _startAutoRefresh();
+    _fetchCoins();
   }
 
-  @override
-  void dispose() {
-    _refreshTimer?.cancel();
-    _refreshController.dispose();
-    super.dispose();
-  }
-
-  void _startAutoRefresh() {
-    _refreshTimer = Timer.periodic(
-      const Duration(seconds: AppConfig.priceUpdateInterval),
-      (_) => _loadData(),
-    );
-  }
-
-  Future<void> _loadData() async {
+  Future<void> _fetchCoins() async {
+    setState(() => _isLoading = true);
     try {
-      final coins = await _cryptoService.getTopCoins();
-      if (mounted) {
-        setState(() {
-          _coins = coins;
-          _isLoading = false;
-        });
-      }
+      _coins = await _cryptoService.getTopCoins();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(ErrorHandler.getMessage(e))),
         );
       }
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
@@ -91,12 +72,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SmartRefresher(
         controller: _refreshController,
-        onRefresh: () async {
-          await _loadData();
-          _refreshController.refreshCompleted();
-        },
+        onRefresh: _fetchCoins,
         child: CustomScrollView(
           slivers: [
+            SliverAppBar(
+              title: const Text('Home'),
+              floating: true,
+            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(AppConfig.defaultPadding),

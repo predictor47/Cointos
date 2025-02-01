@@ -20,12 +20,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
-  final FirebaseApp app = await Firebase.initializeApp(
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  // Initialize Firebase Analytics
-  final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   await setupServiceLocator();
 
@@ -36,11 +33,9 @@ void main() async {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(
           create: (_) => PortfolioProvider(
-            cryptoRepository:
-                getIt<CryptoRepository>(), // Pass the required argument
-            userRepository:
-                getIt<UserRepository>(), // Pass the required argument
-            analytics: getIt<AnalyticsService>(), // Pass the required argument
+            cryptoRepository: getIt<CryptoRepository>(),
+            userRepository: getIt<UserRepository>(),
+            analytics: getIt<AnalyticsService>(),
           ),
         ),
       ],
