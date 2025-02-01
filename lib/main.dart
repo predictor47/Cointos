@@ -6,6 +6,7 @@ import 'core/theme/app_theme.dart';
 import 'features/splash/screens/splash_screen.dart';
 import 'providers/settings_provider.dart';
 import 'providers/user_provider.dart';
+import 'providers/rewards_provider.dart'; // Import RewardsProvider
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart'; // Ensure you have this file generated
 import 'package:kointos/providers/portfolio_provider.dart'; // Import your PortfolioProvider
@@ -38,6 +39,8 @@ void main() async {
             analytics: getIt<AnalyticsService>(),
           ),
         ),
+        ChangeNotifierProvider(
+            create: (_) => getIt<RewardsProvider>()), // Add RewardsProvider
       ],
       child: MaterialApp(
         title: 'Kointos',
