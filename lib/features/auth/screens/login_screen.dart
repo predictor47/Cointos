@@ -9,7 +9,9 @@ import '/data/repositories/auth_repository.dart';
 import '/shared/widgets/custom_button.dart';
 import '/shared/widgets/custom_text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kointos/providers/user_provider.dart';
+import 'package:kointos/services/analytics_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,12 +24,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  // Create FocusNodes
-  final FocusNode _emailFocusNode = FocusNode();
-  final FocusNode _passwordFocusNode = FocusNode();
-
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
   bool _isLoading = false;
+
+  final _authRepository = AuthRepository(
+    firebaseAuth: FirebaseAuth.instance,
+    firestore: FirebaseFirestore.instance,
+    analytics: AnalyticsService(),
+  );
 
   @override
   void dispose() {
@@ -45,45 +50,20 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       try {
-        UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
+        await _authRepository.signIn(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        final user = userCredential.user;
-
-        if (user != null) {
-          Navigator.pushReplacementNamed(context, AppRoutes.main);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Authentication failed')),
-          );
-        }
-      } on FirebaseAuthException catch (e) {
-        String errorMessage;
-
-        switch (e.code) {
-          case 'user-not-found':
-            errorMessage = 'No user found for that email.';
-            break;
-          case 'wrong-password':
-            errorMessage = 'Wrong password provided for that user.';
-            break;
-          case 'invalid-email':
-            errorMessage = 'The email address is not valid.';
-            break;
-          case 'user-disabled':
-            errorMessage = 'User has been disabled.';
-            break;
-          default:
-            errorMessage = 'An unknown error occurred. Please try again.';
-        }
-
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, AppRoutes.main);
+      } on AppError catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
+          SnackBar(content: Text(e.message)),
         );
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('An error occurred: ${e.toString()}')),
         );
@@ -105,96 +85,98 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.all(AppConfig.defaultPadding),
           child: Form(
             key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Welcome Back',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: AppColors.text,
-                        fontWeight: FontWeight.bold,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-                CustomTextField(
-                  label: 'Email',
-                  controller: _emailController,
-                  focusNode: _emailFocusNode,
-                  keyboardType: TextInputType.emailAddress,
-                  prefixIcon: Icons.email,
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Please enter your email';
-                    }
-                    if (!value!.contains('@')) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(_passwordFocusNode);
-                  },
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  label: 'Password',
-                  controller: _passwordController,
-                  focusNode: _passwordFocusNode,
-                  obscureText: true,
-                  prefixIcon: Icons.lock,
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Please enter your password';
-                    }
-                    if (value!.length < ValidationRules.passwordMinLength) {
-                      return 'Password must be at least ${ValidationRules.passwordMinLength} characters';
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: (_) {
-                    _login(); // Call login when Enter is pressed
-                  },
-                ),
-                const SizedBox(height: 24),
-                CustomButton(
-                  text: 'Login',
-                  onPressed: _login,
-                  isLoading: _isLoading,
-                ),
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: () => Navigator.pushNamed(
-                    context,
-                    AppRoutes.forgotPassword,
+            child: AutofillGroup(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Welcome Back',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          color: AppColors.text,
+                          fontWeight: FontWeight.bold,
+                        ),
+                    textAlign: TextAlign.center,
                   ),
-                  child: const Text(
-                    'Forgot Password?',
-                    style: TextStyle(color: AppColors.accent),
+                  const SizedBox(height: 32),
+                  CustomTextField(
+                    label: 'Email',
+                    controller: _emailController,
+                    focusNode: _emailFocusNode,
+                    keyboardType: TextInputType.emailAddress,
+                    autofillHints: const [AutofillHints.email],
+                    prefixIcon: Icons.email,
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) {
+                        return 'Please enter your email';
+                      }
+                      if (!value!.contains('@')) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
+                    onFieldSubmitted: (_) {
+                      FocusScope.of(context).requestFocus(_passwordFocusNode);
+                    },
                   ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Don\'t have an account? ',
-                      style: TextStyle(color: AppColors.text),
+                  const SizedBox(height: 16),
+                  CustomTextField(
+                    label: 'Password',
+                    controller: _passwordController,
+                    focusNode: _passwordFocusNode,
+                    obscureText: true,
+                    autofillHints: const [AutofillHints.password],
+                    prefixIcon: Icons.lock,
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) {
+                        return 'Please enter your password';
+                      }
+                      if (value!.length < ValidationRules.passwordMinLength) {
+                        return 'Password must be at least ${ValidationRules.passwordMinLength} characters';
+                      }
+                      return null;
+                    },
+                    onFieldSubmitted: (_) => _login(),
+                  ),
+                  const SizedBox(height: 24),
+                  CustomButton(
+                    text: 'Login',
+                    onPressed: _login,
+                    isLoading: _isLoading,
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(
+                      context,
+                      AppRoutes.forgotPassword,
                     ),
-                    TextButton(
-                      onPressed: () => Navigator.pushNamed(
-                        context,
-                        AppRoutes.register,
-                      ),
-                      child: const Text(
-                        'Sign Up',
-                        style: TextStyle(color: AppColors.accent),
-                      ),
+                    child: const Text(
+                      'Forgot Password?',
+                      style: TextStyle(color: AppColors.accent),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Don\'t have an account? ',
+                        style: TextStyle(color: AppColors.text),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.register,
+                        ),
+                        child: const Text(
+                          'Sign Up',
+                          style: TextStyle(color: AppColors.accent),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

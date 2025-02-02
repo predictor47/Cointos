@@ -15,59 +15,65 @@ class NotificationService {
 
   Future<void> initialize() async {
     try {
-      final settings = await _messaging.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+      if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {
+        final settings = await _messaging.requestPermission(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
 
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        final token = await _messaging.getToken();
-        if (token != null) {
-          await _saveToken(token);
+        if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+          final token = await _messaging.getToken();
+          if (token != null) {
+            await _saveToken(token);
+          }
+
+          FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+          FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
         }
-
-        FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-        FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error initializing notification service: $e');
-      }
+      debugPrint('Error initializing notification service: $e');
     }
   }
 
   Future<void> _saveToken(String token) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId != null) {
-      await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('tokens')
-          .doc('latest')
-          .set({
-        'token': token,
-        'platform': Platform.operatingSystem,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+    try {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId != null) {
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('tokens')
+            .doc('latest')
+            .set({
+          'token': token,
+          'platform': Platform.operatingSystem,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      debugPrint('Error saving notification token: $e');
     }
   }
 
   void _handleForegroundMessage(RemoteMessage message) {
-    if (kDebugMode) {
-      print(
-          'Received a message in the foreground: ${message.notification?.title}');
+    try {
+      debugPrint('Received foreground message: ${message.notification?.title}');
+      _saveNotification(message);
+      _showLocalNotification(message);
+    } catch (e) {
+      debugPrint('Error handling foreground message: $e');
     }
-    _saveNotification(message);
-    _showLocalNotification(message);
   }
 
   void _handleBackgroundMessage(RemoteMessage message) {
-    if (kDebugMode) {
-      print(
-          'Received a message in the background: ${message.notification?.title}');
+    try {
+      debugPrint('Received background message: ${message.notification?.title}');
+      _saveNotification(message);
+    } catch (e) {
+      debugPrint('Error handling background message: $e');
     }
-    _saveNotification(message);
   }
 
   Future<void> _saveNotification(RemoteMessage message) async {

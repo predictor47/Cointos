@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
+import '/providers/auth_provider.dart' as app_auth;
 import '/core/di/service_locator.dart';
 import '/core/theme/app_theme.dart';
 import '/data/repositories/user_repository.dart';
@@ -22,13 +22,14 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 2;
-  final PageController _pageController = PageController(initialPage: 2);
+  int _currentIndex = 0;
+  final PageController _pageController = PageController(initialPage: 0);
 
   final List<Widget> _screens = const [
     HomeScreen(),
     PortfolioScreen(),
     RewardsScreen(),
+    HomeScreen(), // Market tab - using HomeScreen temporarily
     ProfileScreen(),
   ];
 
@@ -79,9 +80,9 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Listen to user authentication state
-    final user = context.watch<auth.User?>();
-    if (user == null) {
+    // Listen to auth provider state
+    final authProvider = context.watch<app_auth.AuthProvider>();
+    if (authProvider.user == null) {
       return const LoginScreen();
     }
 

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../exceptions/auth_exceptions.dart';
 
 class ErrorHandler {
   static String getMessage(dynamic error) {
@@ -16,7 +17,9 @@ class ErrorHandler {
     if (error is FirebaseAuthException) {
       return _handleFirebaseError(error);
     }
-    return AppError(error.toString(), ErrorType.unknown);
+    return AppError(error.toString(), ErrorType.unknown,
+        recovery: 'Please try again later',
+        context: error is AuthException ? error.recoverySuggestion : null);
   }
 
   static AppError _handleDioError(DioException error) {
@@ -31,15 +34,18 @@ class ErrorHandler {
   }
 
   static AppError _handleFirebaseError(FirebaseAuthException error) {
-    return AppError(error.message ?? 'Authentication error', ErrorType.authentication);
+    return AppError(
+        error.message ?? 'Authentication error', ErrorType.authentication);
   }
 }
 
 class AppError {
   final String message;
   final ErrorType type;
+  final String? recovery;
+  final String? context;
 
-  AppError(this.message, this.type);
+  AppError(this.message, this.type, {this.recovery, this.context});
 }
 
 enum ErrorType {
@@ -47,4 +53,4 @@ enum ErrorType {
   authentication,
   server,
   unknown,
-} 
+}

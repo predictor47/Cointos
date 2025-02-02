@@ -82,7 +82,10 @@ class CryptoRepository {
   Future<void> setPriceAlert(PriceAlert alert) async {
     try {
       final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) throw UnauthorizedException();
+      if (userId == null) {
+        throw AuthException(
+            'Authentication required', 'Please log in to set price alerts');
+      }
 
       await _firestore
           .collection('users')
@@ -98,7 +101,10 @@ class CryptoRepository {
   Future<void> deletePriceAlert(String alertId) async {
     try {
       final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) throw UnauthorizedException();
+      if (userId == null) {
+        throw AuthException(
+            'Authentication required', 'Please log in to manage price alerts');
+      }
 
       await _firestore
           .collection('users')

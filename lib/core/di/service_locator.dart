@@ -13,6 +13,7 @@ import 'package:kointos/data/repositories/user_repository.dart';
 import 'package:kointos/providers/portfolio_provider.dart';
 import 'package:kointos/providers/rewards_provider.dart';
 import 'package:kointos/providers/settings_provider.dart';
+import 'package:kointos/providers/auth_provider.dart' as app_auth;
 import 'package:kointos/services/analytics_service.dart';
 import 'package:kointos/services/notification_service.dart';
 import '../constants/api_constants.dart';
@@ -103,6 +104,10 @@ Future<void> setupServiceLocator() async {
       userRepository: getIt(),
       analytics: getIt(),
     ),
+  );
+
+  getIt.registerFactory<app_auth.AuthProvider>(
+    () => app_auth.AuthProvider(),
   );
 }
 

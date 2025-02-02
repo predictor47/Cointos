@@ -25,6 +25,7 @@ class AppRoutes {
   static const String support = '/support';
   static const String spinWheel = '/spin-wheel';
   static const String changePassword = '/change-password';
+  static const String error = '/error';
 
   static Map<String, WidgetBuilder> get routes => {
         login: (context) => const LoginScreen(),

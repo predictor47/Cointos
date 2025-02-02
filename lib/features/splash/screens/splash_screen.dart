@@ -4,40 +4,39 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '/../core/theme/app_theme.dart';
 import '/../core/config/routes.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _checkAuthState();
-  }
-
-  Future<void> _checkAuthState() async {
+  Future<void> _checkAuthState(BuildContext context) async {
     await Future.delayed(const Duration(seconds: 2));
-    if (!mounted) return;
+    if (!context.mounted) return;
 
-    final user = FirebaseAuth.instance.currentUser;
-    Navigator.pushReplacementNamed(
-      context,
-      user != null ? AppRoutes.main : AppRoutes.login,
-    );
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (context.mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          user != null ? AppRoutes.main : AppRoutes.login,
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.login);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _checkAuthState(context));
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Your app logo here
             const Icon(
               Icons.currency_bitcoin,
               size: 80,

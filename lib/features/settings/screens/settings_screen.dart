@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kointos/core/config/app_config.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:kointos/core/config/routes.dart';
 import 'package:kointos/core/theme/app_theme.dart';
 import 'package:kointos/features/profile/widgets/profile_menu_item.dart';
@@ -88,15 +89,25 @@ class SettingsScreen extends StatelessWidget {
               ProfileMenuItem(
                 title: 'Privacy Policy',
                 icon: Icons.privacy_tip,
-                onTap: () {
-                  // TODO: Open privacy policy
+                onTap: () async {
+                  final Uri url = Uri.parse(AppConfig.privacyPolicyUrl);
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
                 },
               ),
               ProfileMenuItem(
                 title: 'Terms of Service',
                 icon: Icons.description,
-                onTap: () {
-                  // TODO: Open terms of service
+                onTap: () async {
+                  final Uri url = Uri.parse(AppConfig.termsOfServiceUrl);
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
                 },
               ),
               ProfileMenuItem(
