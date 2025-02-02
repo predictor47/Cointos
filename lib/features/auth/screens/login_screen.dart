@@ -80,102 +80,106 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppConfig.defaultPadding),
-          child: Form(
-            key: _formKey,
-            child: AutofillGroup(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Welcome Back',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: AppColors.text,
-                          fontWeight: FontWeight.bold,
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-                  CustomTextField(
-                    label: 'Email',
-                    controller: _emailController,
-                    focusNode: _emailFocusNode,
-                    keyboardType: TextInputType.emailAddress,
-                    autofillHints: const [AutofillHints.email],
-                    prefixIcon: Icons.email,
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please enter your email';
-                      }
-                      if (!value!.contains('@')) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
-                    },
-                    onFieldSubmitted: (_) {
-                      FocusScope.of(context).requestFocus(_passwordFocusNode);
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    label: 'Password',
-                    controller: _passwordController,
-                    focusNode: _passwordFocusNode,
-                    obscureText: true,
-                    autofillHints: const [AutofillHints.password],
-                    prefixIcon: Icons.lock,
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please enter your password';
-                      }
-                      if (value!.length < ValidationRules.passwordMinLength) {
-                        return 'Password must be at least ${ValidationRules.passwordMinLength} characters';
-                      }
-                      return null;
-                    },
-                    onFieldSubmitted: (_) => _login(),
-                  ),
-                  const SizedBox(height: 24),
-                  CustomButton(
-                    text: 'Login',
-                    onPressed: _login,
-                    isLoading: _isLoading,
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () => Navigator.pushNamed(
-                      context,
-                      AppRoutes.forgotPassword,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(AppConfig.defaultPadding),
+            child: Form(
+              key: _formKey,
+              child: AutofillGroup(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Welcome Back',
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                color: AppColors.text,
+                                fontWeight: FontWeight.bold,
+                              ),
+                      textAlign: TextAlign.center,
                     ),
-                    child: const Text(
-                      'Forgot Password?',
-                      style: TextStyle(color: AppColors.accent),
+                    const SizedBox(height: 32),
+                    CustomTextField(
+                      label: 'Email',
+                      controller: _emailController,
+                      focusNode: _emailFocusNode,
+                      keyboardType: TextInputType.emailAddress,
+                      autofillHints: const [AutofillHints.email],
+                      prefixIcon: Icons.email,
+                      validator: (value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'Please enter your email';
+                        }
+                        if (!value!.contains('@')) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(_passwordFocusNode);
+                      },
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Don\'t have an account? ',
-                        style: TextStyle(color: AppColors.text),
+                    const SizedBox(height: 16),
+                    CustomTextField(
+                      label: 'Password',
+                      controller: _passwordController,
+                      focusNode: _passwordFocusNode,
+                      obscureText: true,
+                      autofillHints: const [AutofillHints.password],
+                      prefixIcon: Icons.lock,
+                      validator: (value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'Please enter your password';
+                        }
+                        if (value!.length < ValidationRules.passwordMinLength) {
+                          return 'Password must be at least ${ValidationRules.passwordMinLength} characters';
+                        }
+                        return null;
+                      },
+                      onFieldSubmitted: (_) => _login(),
+                    ),
+                    const SizedBox(height: 24),
+                    CustomButton(
+                      text: 'Login',
+                      onPressed: _login,
+                      isLoading: _isLoading,
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: () => Navigator.pushNamed(
+                        context,
+                        AppRoutes.forgotPassword,
                       ),
-                      TextButton(
-                        onPressed: () => Navigator.pushNamed(
-                          context,
-                          AppRoutes.register,
-                        ),
-                        child: const Text(
-                          'Sign Up',
-                          style: TextStyle(color: AppColors.accent),
-                        ),
+                      child: const Text(
+                        'Forgot Password?',
+                        style: TextStyle(color: AppColors.accent),
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Don\'t have an account? ',
+                          style: TextStyle(color: AppColors.text),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pushNamed(
+                            context,
+                            AppRoutes.register,
+                          ),
+                          child: const Text(
+                            'Sign Up',
+                            style: TextStyle(color: AppColors.accent),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
