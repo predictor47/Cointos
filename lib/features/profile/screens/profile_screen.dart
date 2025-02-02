@@ -1,21 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '/../core/config/app_config.dart';
-import '/../core/config/routes.dart';
-import '/../core/di/service_locator.dart';
-import '/../core/theme/app_theme.dart';
-import '/../data/models/user.dart';
-import '/../data/repositories/auth_repository.dart';
-import '/../providers/rewards_provider.dart';
-import '/../data/repositories/user_repository.dart';
+import 'package:kointos/core/config/app_config.dart';
+import 'package:kointos/core/config/routes.dart';
+import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/data/models/user.dart';
+import 'package:kointos/providers/rewards_provider.dart';
+import 'package:kointos/data/repositories/user_repository.dart';
+import 'package:kointos/providers/auth_provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  late Future<void> _articlesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _articlesFuture = _loadArticlesCount();
+  }
+
+  Future<void> _loadArticlesCount() async {
+    final userRepo = context.read<UserRepository>();
+    await userRepo.fetchArticlesReadCount();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final user = context.watch<User>();
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.user;
     final rewards = context.watch<RewardsProvider>();
+
+    if (user == null) {
+      return const Scaffold(
+        body: Center(
+          child: Text('Please login to view your profile'),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -27,26 +53,15 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: context.read<UserRepository>().fetchUserData(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
-          return ListView(
-            padding: const EdgeInsets.all(AppConfig.defaultPadding),
-            children: [
-              _buildProfileHeader(user),
-              const SizedBox(height: 24),
-              _buildStatsSection(context, rewards),
-              const SizedBox(height: 24),
-              _buildMenuSection(context),
-            ],
-          );
-        },
+      body: ListView(
+        padding: const EdgeInsets.all(AppConfig.defaultPadding),
+        children: [
+          _buildProfileHeader(user),
+          const SizedBox(height: 24),
+          _buildStatsSection(context, rewards),
+          const SizedBox(height: 24),
+          _buildMenuSection(context),
+        ],
       ),
     );
   }
@@ -79,7 +94,7 @@ class ProfileScreen extends StatelessWidget {
           user.email,
           style: TextStyle(
             fontSize: 16,
-            color: AppColors.text.withAlpha(179), // 0.7 * 255 ≈ 179
+            color: AppColors.text.withAlpha(179),
           ),
         ),
       ],
@@ -87,6 +102,8 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildStatsSection(BuildContext context, RewardsProvider rewards) {
+    final userRepo = context.watch<UserRepository>();
+
     return Row(
       children: [
         _buildStatCard(
@@ -95,10 +112,17 @@ class ProfileScreen extends StatelessWidget {
           Icons.stars,
         ),
         const SizedBox(width: 16),
-        _buildStatCard(
-          'Articles Read',
-          '${context.watch<UserRepository>().articlesReadCount}',
-          Icons.article,
+        FutureBuilder(
+          future: _articlesFuture,
+          builder: (context, snapshot) {
+            return _buildStatCard(
+              'Articles Read',
+              snapshot.connectionState == ConnectionState.waiting
+                  ? '...'
+                  : '${userRepo.articlesReadCount}',
+              Icons.article,
+            );
+          },
         ),
       ],
     );
@@ -127,7 +151,7 @@ class ProfileScreen extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: AppColors.text.withAlpha(179), // 0.7 * 255 ≈ 179
+                color: AppColors.text.withAlpha(179),
               ),
             ),
           ],
@@ -160,14 +184,9 @@ class ProfileScreen extends StatelessWidget {
           () => Navigator.pushNamed(context, AppRoutes.notifications),
         ),
         _buildMenuItem(
-          'Security',
-          Icons.security,
-          () => Navigator.pushNamed(context, AppRoutes.security),
-        ),
-        _buildMenuItem(
-          'Help & Support',
-          Icons.help,
-          () => Navigator.pushNamed(context, AppRoutes.support),
+          'Change Password',
+          Icons.lock,
+          () => Navigator.pushNamed(context, AppRoutes.changePassword),
         ),
         _buildMenuItem(
           'Logout',
@@ -212,7 +231,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              getIt<AuthRepository>().signOut();
+              context.read<AuthProvider>().logout();
               Navigator.pop(context);
             },
             child: const Text(

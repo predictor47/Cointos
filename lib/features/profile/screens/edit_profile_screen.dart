@@ -11,6 +11,7 @@ import 'package:kointos/core/theme/app_theme.dart';
 import 'package:kointos/core/utils/error_handler.dart';
 import 'package:kointos/data/models/user.dart';
 import 'package:kointos/data/repositories/user_repository.dart';
+import 'package:kointos/providers/auth_provider.dart';
 import 'package:kointos/shared/widgets/custom_button.dart';
 import 'package:kointos/shared/widgets/custom_text_field.dart';
 
@@ -30,8 +31,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final user = context.read<User>();
-    _usernameController.text = user.username;
+    final user = context.read<AuthProvider>().user;
+    if (user != null) {
+      _usernameController.text = user.username;
+    }
   }
 
   @override
@@ -58,14 +61,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() => _isLoading = true);
     try {
       final userRepo = getIt<UserRepository>();
-      final user = context.read<User>();
-      String? imageUrl;
+      final user = context.read<AuthProvider>().user;
 
+      if (user == null) {
+        throw Exception('No user logged in');
+      }
+
+      String? imageUrl;
       if (_imageFile != null) {
-        final storage = FirebaseStorage.instance;
-        final ref = storage.ref().child('profile_images/${user.id}');
-        await ref.putFile(_imageFile!);
-        imageUrl = await ref.getDownloadURL();
+        try {
+          imageUrl = await userRepo.uploadProfileImage(user.id, _imageFile!);
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      'Failed to upload image: ${ErrorHandler.getMessage(e)}')),
+            );
+            return;
+          }
+        }
       }
 
       final updatedUser = user.copyWith(
@@ -96,7 +111,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<User>();
+    final user = context.watch<AuthProvider>().user;
+
+    if (user == null) {
+      return const Scaffold(
+        body: Center(
+          child: Text('Please login to edit your profile'),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(

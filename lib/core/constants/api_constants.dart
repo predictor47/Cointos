@@ -3,7 +3,7 @@ class ApiEndpoints {
   static const String markets = '/coins/markets';
   static const String search = '/search';
   static const String trending = '/search/trending';
-  
+
   // Coin specific endpoints
   static String coinDetail(String id) => '/coins/$id';
   static String coinMarketChart(String id) => '/coins/$id/market_chart';
@@ -30,7 +30,7 @@ class ApiDefaults {
 }
 
 class ApiConstants {
-  static const String baseUrl = 'https://api.example.com'; // Replace with your actual API base URL
-  
+  static const String baseUrl = 'https://api.coingecko.com/api/v3';
+
   // Add other API-related constants here
-} 
+}

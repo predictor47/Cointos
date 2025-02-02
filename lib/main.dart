@@ -40,12 +40,14 @@ void main() async {
           create: (_) => getIt<PortfolioProvider>(),
         ),
         ChangeNotifierProvider(create: (_) => getIt<RewardsProvider>()),
+        ChangeNotifierProvider(create: (_) => getIt<UserRepository>()),
       ],
       child: MaterialApp(
         title: 'Kointos',
         theme: AppTheme.darkTheme,
         home: const SplashScreen(),
         routes: AppRoutes.routes,
+        onGenerateRoute: AppRoutes.onGenerateRoute,
         navigatorObservers: [
           FirebaseAnalyticsObserver(analytics: analytics),
         ],

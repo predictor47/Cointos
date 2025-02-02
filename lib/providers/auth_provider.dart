@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../core/utils/error_handler.dart';
+import '../data/repositories/auth_repository.dart';
+import '../data/models/user.dart';
 
 class AuthProvider with ChangeNotifier {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
+  final AuthRepository _authRepository;
   bool _isLoading = false;
   String? _errorMessage;
   User? _user;
@@ -14,47 +14,47 @@ class AuthProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   User? get user => _user;
 
+  AuthProvider(this._authRepository) {
+    // Listen to auth state changes
+    _authRepository.authStateChanges.listen((user) {
+      _user = user;
+      notifyListeners();
+    });
+  }
+
   Future<void> login(String email, String password) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      _user = userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        _errorMessage = 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        _errorMessage = 'Wrong password provided for that user.';
-      } else {
-        _errorMessage = 'An error occurred during login.';
-      }
+      _user = await _authRepository.signIn(
+        email: email,
+        password: password,
+      );
+      _errorMessage = null;
+    } catch (e) {
+      _errorMessage = ErrorHandler.getMessage(e);
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> signup(String email, String password) async {
+  Future<void> signup(String email, String password, String username) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      UserCredential userCredential = await _auth
-          .createUserWithEmailAndPassword(email: email, password: password);
-
-      _user = userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        _errorMessage = 'The password provided is too weak.';
-      } else if (e.code == 'email-already-in-use') {
-        _errorMessage = 'The account already exists for that email.';
-      } else {
-        _errorMessage = 'An error occurred during signup.';
-      }
+      _user = await _authRepository.signUp(
+        email: email,
+        password: password,
+        username: username,
+      );
+      _errorMessage = null;
+    } catch (e) {
+      _errorMessage = ErrorHandler.getMessage(e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -67,47 +67,9 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await _auth.sendPasswordResetEmail(email: email);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        _errorMessage = 'No user found for that email.';
-      } else {
-        _errorMessage =
-            'An error occurred while sending the password reset email.';
-      }
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<UserCredential?> signInWithGoogle() async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        _isLoading = false;
-        notifyListeners();
-        return null; // User canceled the sign-in
-      }
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final userCredential = await _auth.signInWithCredential(credential);
-      _user = userCredential.user;
-      return userCredential;
-    } on FirebaseAuthException catch (e) {
-      _errorMessage = e.message; // Handle Google sign-in errors
-      return null;
+      await _authRepository.resetPassword(email);
+    } catch (e) {
+      _errorMessage = e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -115,8 +77,12 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
-    await _auth.signOut();
-    _user = null;
+    try {
+      await _authRepository.signOut();
+      _user = null;
+    } catch (e) {
+      _errorMessage = e.toString();
+    }
     notifyListeners();
   }
 
@@ -127,15 +93,19 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final user = _auth.currentUser;
-      if (user == null) throw 'No user logged in';
+      if (_user == null) throw 'No user logged in';
 
-      final credential = EmailAuthProvider.credential(
-        email: user.email!,
+      // First verify the current password by attempting to sign in
+      await _authRepository.signIn(
+        email: _user!.email,
         password: currentPassword,
       );
-      await user.reauthenticateWithCredential(credential);
-      await user.updatePassword(newPassword);
+
+      // Sign back in with new password
+      _user = await _authRepository.signIn(
+        email: _user!.email,
+        password: newPassword,
+      );
     } catch (e) {
       _errorMessage = e.toString();
       throw _errorMessage!;

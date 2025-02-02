@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -66,6 +67,17 @@ class UserRepository extends ChangeNotifier {
       }
 
       return User.fromJson(doc.data()!);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<String> uploadProfileImage(String userId, File imageFile) async {
+    try {
+      final ref = storage.ref().child('profile_images/$userId');
+      await ref.putFile(imageFile);
+      final imageUrl = await ref.getDownloadURL();
+      return imageUrl;
     } catch (e) {
       throw _handleError(e);
     }
@@ -202,7 +214,7 @@ class UserRepository extends ChangeNotifier {
     final doc = await firestore.collection('users').doc(userId).get();
     if (!doc.exists) throw Exception('User not found');
 
-    return User.fromJson(doc.data()!);
+    return User.fromJson({...doc.data()!, 'id': doc.id});
   }
 
   AppError _handleError(dynamic error) {

@@ -17,14 +17,36 @@ class AuthRepository {
   });
 
   Stream<User?> get authStateChanges =>
-      firebaseAuth.authStateChanges().map((auth.User? firebaseUser) {
-        return firebaseUser == null
-            ? null
-            : User(
-                id: firebaseUser.uid,
-                email: firebaseUser.email!,
-                username: firebaseUser.displayName ?? '',
-              );
+      firebaseAuth.authStateChanges().asyncMap((auth.User? firebaseUser) async {
+        if (firebaseUser == null) return null;
+        try {
+          final userDoc = await firestore
+              .collection(FirestoreCollections.users)
+              .doc(firebaseUser.uid)
+              .get();
+
+          if (!userDoc.exists) {
+            // Create user document if it doesn't exist
+            final newUser = User(
+              id: firebaseUser.uid,
+              email: firebaseUser.email!,
+              username:
+                  firebaseUser.displayName ?? firebaseUser.email!.split('@')[0],
+            );
+            await firestore
+                .collection(FirestoreCollections.users)
+                .doc(newUser.id)
+                .set(newUser.toJson());
+            return newUser;
+          }
+
+          final data = userDoc.data()!;
+          data['id'] = firebaseUser.uid;
+          return User.fromJson(data);
+        } catch (e) {
+          print('Error in authStateChanges: ${e.toString()}');
+          return null;
+        }
       });
 
   Future<User> signUp({
@@ -72,7 +94,23 @@ class AuthRepository {
           .doc(userCredential.user!.uid)
           .get();
 
-      return User.fromJson(userData.data()!);
+      if (!userData.exists) {
+        // Create a new user document if it doesn't exist
+        final newUser = User(
+          id: userCredential.user!.uid,
+          email: userCredential.user!.email!,
+          username: userCredential.user!.displayName ?? email.split('@')[0],
+        );
+        await firestore
+            .collection(FirestoreCollections.users)
+            .doc(newUser.id)
+            .set(newUser.toJson());
+        return newUser;
+      }
+
+      final data = userData.data()!;
+      data['id'] = userCredential.user!.uid;
+      return User.fromJson(data);
     } catch (e) {
       throw _handleAuthError(e);
     }
@@ -101,11 +139,27 @@ class AuthRepository {
         case 'email-already-in-use':
           return AppError(
               'Email is already registered', ErrorType.authentication);
+        case 'invalid-email':
+          return AppError('Invalid email address', ErrorType.authentication);
+        case 'weak-password':
+          return AppError('Password is too weak', ErrorType.authentication);
+        case 'user-disabled':
+          return AppError(
+              'This account has been disabled', ErrorType.authentication);
+        case 'invalid-credential':
+          return AppError(
+              'Invalid email or password', ErrorType.authentication);
         default:
-          return AppError(error.message ?? ErrorMessages.authError,
+          return AppError(error.message ?? 'Authentication failed',
               ErrorType.authentication);
       }
     }
-    return AppError(ErrorMessages.unknownError, ErrorType.unknown);
+    if (error is AppError) {
+      return error;
+    }
+    if (error is Exception) {
+      return AppError(error.toString(), ErrorType.unknown);
+    }
+    return AppError('An unknown error occurred', ErrorType.unknown);
   }
 }

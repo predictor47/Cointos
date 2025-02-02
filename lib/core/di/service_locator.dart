@@ -16,6 +16,7 @@ import 'package:kointos/providers/settings_provider.dart';
 import 'package:kointos/providers/auth_provider.dart' as app_auth;
 import 'package:kointos/services/analytics_service.dart';
 import 'package:kointos/services/notification_service.dart';
+import 'package:kointos/services/crypto_service.dart';
 import '../constants/api_constants.dart';
 
 final getIt = GetIt.instance;
@@ -86,6 +87,11 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
+  // Services
+  getIt.registerLazySingleton<CryptoService>(
+    () => CryptoService(repository: getIt<CryptoRepository>()),
+  );
+
   // Providers
   getIt.registerFactory<SettingsProvider>(
     () => SettingsProvider(),
@@ -107,7 +113,7 @@ Future<void> setupServiceLocator() async {
   );
 
   getIt.registerFactory<app_auth.AuthProvider>(
-    () => app_auth.AuthProvider(),
+    () => app_auth.AuthProvider(getIt<AuthRepository>()),
   );
 }
 

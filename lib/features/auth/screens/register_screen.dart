@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kointos/core/config/routes.dart';
+import 'package:kointos/core/constants/app_constants.dart';
 import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/utils/error_handler.dart';
 import 'package:kointos/shared/widgets/custom_button.dart';
 import 'package:kointos/shared/widgets/custom_text_field.dart';
 import 'package:provider/provider.dart';
-import 'package:kointos/providers/user_provider.dart';
+import 'package:kointos/providers/auth_provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -15,15 +16,12 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  // Create FocusNodes
-  final FocusNode _usernameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
   final FocusNode _confirmPasswordFocusNode = FocusNode();
@@ -33,8 +31,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    // Dispose of the FocusNodes
-    _usernameFocusNode.dispose();
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     _confirmPasswordFocusNode.dispose();
@@ -42,46 +42,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _register() async {
-    if (_formKey.currentState!.validate()) {
-      if (_passwordController.text.trim() !=
-          _confirmPasswordController.text.trim()) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Passwords do not match')),
-        );
-        return;
-      }
+    if (!_formKey.currentState!.validate()) return;
 
-      setState(() {
-        _isLoading = true;
-      });
+    if (_passwordController.text.trim() !=
+        _confirmPasswordController.text.trim()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
 
-      try {
-        UserCredential userCredential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
+    setState(() => _isLoading = true);
 
-        final user = userCredential.user;
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await authProvider.signup(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+        _usernameController.text.trim(),
+      );
 
-        if (user != null) {
-          // Save additional user information
-          Provider.of<UserProvider>(context, listen: false).setUserInfo(
-            _nameController.text.trim(),
-            _usernameController.text.trim(),
-            user.uid,
-          );
-
-          Navigator.pushReplacementNamed(context, AppRoutes.main);
-        }
-      } on FirebaseAuthException catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message ?? 'Registration failed')),
-        );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, AppRoutes.main);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorHandler.getMessage(e))),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -92,34 +82,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         title: const Text('Register'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CustomTextField(
-                controller: _nameController,
-                label: 'Name',
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
-                  }
-                  return null;
-                },
-                onFieldSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(_usernameFocusNode);
-                },
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
               CustomTextField(
                 controller: _usernameController,
                 label: 'Username',
-                focusNode: _usernameFocusNode,
+                prefixIcon: Icons.person,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your username';
+                  }
+                  if (value.length < ValidationRules.usernameMinLength) {
+                    return 'Username must be at least ${ValidationRules.usernameMinLength} characters';
                   }
                   return null;
                 },
@@ -133,9 +113,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 label: 'Email',
                 focusNode: _emailFocusNode,
                 keyboardType: TextInputType.emailAddress,
+                prefixIcon: Icons.email,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
+                  }
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                      .hasMatch(value)) {
+                    return 'Please enter a valid email';
                   }
                   return null;
                 },
@@ -143,15 +128,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   FocusScope.of(context).requestFocus(_passwordFocusNode);
                 },
               ),
+              const SizedBox(height: 8),
+              const Text(
+                'Your email will be used for login and account recovery',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                ),
+              ),
               const SizedBox(height: 16),
               CustomTextField(
                 controller: _passwordController,
                 label: 'Password',
                 focusNode: _passwordFocusNode,
                 obscureText: true,
+                prefixIcon: Icons.lock,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
+                  }
+                  if (value.length < ValidationRules.passwordMinLength) {
+                    return 'Password must be at least ${ValidationRules.passwordMinLength} characters';
                   }
                   return null;
                 },
@@ -166,23 +163,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 label: 'Confirm Password',
                 focusNode: _confirmPasswordFocusNode,
                 obscureText: true,
+                prefixIcon: Icons.lock,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please confirm your password';
                   }
+                  if (value != _passwordController.text) {
+                    return 'Passwords do not match';
+                  }
                   return null;
                 },
-                onFieldSubmitted: (_) {
-                  _register(); // Call register when Enter is pressed
-                },
+                onFieldSubmitted: (_) => _register(),
               ),
-              const SizedBox(height: 24),
-              _isLoading
-                  ? CircularProgressIndicator()
-                  : CustomButton(
-                      text: 'Register',
-                      onPressed: _register,
+              const SizedBox(height: 32),
+              CustomButton(
+                text: 'Register',
+                onPressed: _register,
+                isLoading: _isLoading,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Already have an account? ',
+                    style: TextStyle(color: AppColors.text),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pushReplacementNamed(
+                      context,
+                      AppRoutes.login,
                     ),
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(color: AppColors.accent),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
